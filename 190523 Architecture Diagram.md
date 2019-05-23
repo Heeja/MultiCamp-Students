@@ -141,3 +141,27 @@ Process간에 데이터 공유는 연동되지 않으면 불가능하다.
 
 
 
+H/W = 몸 / OS = 두뇌 / Server = 생각
+
+우리는 H/W를 30%정도만 사용하고 70%가 남아있음에도 불구하고 증설하거나 보완한다.
+남은 자원을 효율적으로 사용하기 위해서 하나의 H/W에서 여러개의 Server를 사용하기 시작한다.
+
+
+
+Virtual Machine 기술을 이용하여 하나의 H/W에서 여러개의 Server를 사용하기 시작했으나 효율이 좋지 못하다..
+그래서 Container형식의 Docker를 사용하기 시작한다.
+
+
+
+**Docker**
+
+* Docker를 사용하고자하면 Docker를 설치해야 한다.
+* Docker를 만든사람이 Linux를 더 잘 알고있어서인지 Docker가 Linux에 최적화 되어있다.
+* Network가 되지않으면 사용에 제한이 크다.
+
+
+
+Blockchain은 활용면에서 Database 역할을 할 것이다.
+
+
+
