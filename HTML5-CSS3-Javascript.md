@@ -116,3 +116,78 @@ Web Server와 CGI가 같은 구조에 있어야 구동된다.
 
 
 
+### 웹 실습환경 구축 (P27)
+
+웹 문서
+
+* 컴퓨터 파일 
+* HTML5 파일 (.htm, *.html)
+
+
+
+
+
+### HTML5 문서 작성 (P36)
+
+* HTML 구조
+
+```
+<!DOCTYPE HTML> //선언의 시작으로 HTML5 언어를 시작
+<html>
+<head>
+
+</head>
+<body>
+
+</body>
+</html>
+```
+
+* HTML 요소 표현
+  \<a href="http://naver.com"> 네이버로 가자 \</a>
+  \<a>: 	요소 시작. 요소명(a)
+  href: 	속성
+  "http://naver.com": 속성값. 속성값은 문자열 ""로 표현해줘야 한다.
+  네이버로 가자: 요소내용
+  \</a>: 종료태그
+
+* HTML
+  * Head
+    * title, meta, link, style, script
+  * Body
+    * 글자: strong, b, i, super ...
+    * 문단: h1~h6, pre, p, br, hr ...
+    * 멀티미디어: img, audio, video
+    * 하이퍼링크: a
+    * 외부파일: iframe, object, embed
+    * 문서 레이아웃: div, span
+    * 입력양식: form, input, select, textarea ...
+    * 시맨틱 문서: header, nav, ...
+
+
+
+**!!!!HTML5 시멘틱 문서 구조가 나온 이유**
+
+Google이 크롤링엔진.. 웹사이트, 웹페이지의 텍스트를 수집하여 잘 분류하기 위해..
+**정보제공 문제** - 보안적 문제. 페이지의 의미&용도를 알 수 있게 된다(?)
+
+
+
+**Inline Element**: 
+
+
+
+**Inline Block**: span, a, img, input, select ...
+
+**Line Block**: div, h1~6, p, pre, ul, ol, table, form ...
+
+
+
+**Session**
+CGI는 같은 메모리에서 동작한다.
+같은 메모리에 있지만 아무대나 접근하지 않고 접근할 수 없다.
+그래서 접근할 수 있는 공통 영역을 가지고 있다.
+공통된 영역을 다시 사물함 처럼 구역을 나누어 가지고 있으며, 아무나 접근하지 않고 Session Key를 가진 사람이 접근할 수 있다.
+
+**Session ID**
+Session에 접근할 수 있는 Key
