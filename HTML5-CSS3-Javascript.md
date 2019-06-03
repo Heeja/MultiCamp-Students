@@ -265,7 +265,7 @@ Framework: 책장. 정해진 틀을 변경할 수 없으며 틀에 따라서 사
 
 
 
-##### Metho vs Fuction
+##### Method vs Fuction
 
 **Method**: 클래스, 구조체, 열거형에 포함되어있는 "함수"
 
@@ -288,7 +288,70 @@ Framework: 책장. 정해진 틀을 변경할 수 없으며 틀에 따라서 사
 
 
 
-전역변수
+##### Global Object
 
-* var와 같은 00없이 변수를 선언 (ex. obj1="" (Ok) / var obj1=""(No))
+* 어디서든지 접근할 수 있는 변수
+* 사용의 자제
+  * 소스와 데이터의 공개성
+  * 비동기 로직이 용이하게 구현 가능
+  * 모바일/PC 등 좋은 성능에서 안 좋은 성능까지 골고루 퍼져있는 브라우징 환경
+    * 출처: https://unikys.tistory.com/324
+
+
+
+#### 자료형
+
+* 자료형 String
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body>
+<h3>블록문 사용</h3><hr>
+	<script>
+    var str1="a";	// 선언
+    var str2=new String("a");	//생성자 - 객체 생성에 관여하는 연산자. String은 꼭 'S'를 사용. 소문자x
+        
+    document.write(str1===str2);
+    document.write(str1.length); // length 속성
+    document.write(str1.indexOf("")); // indexof Method (대소문자 구문 필수!)
+    document.write(str1.lastIndexOf("")); // lastIndexof Method (대소문자 구문 필수!)
+    document.write(str.slice(-12, -6);); // slice method. 문자열을 잘라서 표시
+    documnet.write(str1.concat(" ","plus")); // 이어붙이기
+    
+    </script>
+</body>
+</html>
+```
+
+##### new String()
+
+새로 생성된 String(객체로서 생성됨)은 바꿀수 없음.
+
+```
+<script>
+	var t3= new String("Hello");
+	var t4 = t3.concat(" ", "World!");
+	t3 = t3.concat(" ", "World!");
+	
+    document.write(t4+'<br>');
+    document.write(t3+'<br>');
+    document.write(t3===t4);
+</script>
+```
+
+
+
+* Number 형
+  * NaN(Not a Number) - 자료값이 수치형이 아님
+  * Infinity - 시스템에서 표현 가능한 최대값을 벗어난 값
+* boolean 형
+  * 자바스크립트에서는 정수 0과 -0 그리고 공백문자열(""), undefind형 변수, null객체는 boolean형으로 변환하면 모두 false이고, 그 외 모두는 true이다.
+
+
+
+
 
