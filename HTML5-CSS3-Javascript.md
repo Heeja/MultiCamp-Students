@@ -191,3 +191,104 @@ CGI는 같은 메모리에서 동작한다.
 
 **Session ID**
 Session에 접근할 수 있는 Key
+
+
+
+
+
+### CSS3
+
+1. 박스 모델
+
+   * 크기관련 속성들
+
+2.  박스 유형
+
+   * Block Box
+
+   * Inline Box
+   * Inline-Block Box
+
+3. 박스 내부 테스트 정렬
+
+
+
+#### Library vs Framework
+
+Library: 완전연료. 사용자가 가공하여 사용할 수 있다.
+
+Framework: 책장. 정해진 틀을 변경할 수 없으며 틀에 따라서 사용해야한다.
+
+
+
+
+
+
+
+### JavaScript
+
+특징
+
+* 독립적인 인터프리터 언어
+* 별도의 정형화된 프로그램 구조는 존재하지 않는다.
+* 동적 타이핑을 지원. 변수들의 자료형을 자유롭게 변환할 수 있다.
+* 객체 기반 언어. (Object Based)
+  DOM(D Object Model), BOM(Browser Object Model) 같은 웹 브라우저 및 HTML 문서와의 인터페이스를 위한 다양한 객체들을 제공한다.
+* Web Browser환경에서의 Event 처리를 지원한다.
+
+
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+	<script>
+	var obj1="CSS3"; // 변수 선언
+	function welcome(obj){
+	document.write(obj);
+	} // Fucntion 정의. 
+    </script>
+</head>
+
+<body>
+	<h3> Welcome! &nbsp; HTML5 웹 프로그래밍</h3><hr>
+	<ol>
+		<li>Using HTML! + <script> Welcome(obj1); </script></li>
+		<li><script>welcome('Using Javascript');</script></li>
+	</ol>
+</body>
+</html>
+```
+
+* Head부분에는 보통 선언, 정의를 한다.
+* 
+
+
+
+##### Metho vs Fuction
+
+**Method**: 클래스, 구조체, 열거형에 포함되어있는 "함수"
+
+**Fuction**: 독립적인 기능. 어떤 특정 개체에 종속되어 있지 않는 것 (Citizen)
+
+
+
+객체지향 언어에서는 객체를 중요하게 생각한다.
+
+
+
+**UTF-8 Encoding**
+
+영문코드는 1byte, 한글코드는 3byte로 표현한다.
+자바스크립트 코드 작성에 유리하면서 운영체제가 지원하는 문자세트에 관계없이 다국어 문자들을 한꺼번에 표현할 수 있다.
+
+
+
+* 변수의 선언: 특정 자료형 값을 가진 변수에 다른 자료형 값을 저장하면 변수의 자료형은 자동으로 변환된다.
+
+
+
+전역변수
+
+* var와 같은 00없이 변수를 선언 (ex. obj1="" (Ok) / var obj1=""(No))
+
