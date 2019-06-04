@@ -261,7 +261,6 @@ Framework: 책장. 정해진 틀을 변경할 수 없으며 틀에 따라서 사
 ```
 
 * Head부분에는 보통 선언, 정의를 한다.
-* 
 
 
 
@@ -301,7 +300,18 @@ Framework: 책장. 정해진 틀을 변경할 수 없으며 틀에 따라서 사
 
 #### 자료형
 
-* 자료형 String
+자료를 컴퓨터 메모리에 저장해서 표현하는 방식
+
+메모리 크기와 저장방식, 값들의 저장방식(유형) 등에 따라 구분함!
+
+* 기본 자료형: 간단히 한 값으로 표현할 수 있는 자료들 (이름, Yes/No ...)
+* 객체 자료형: 여러 속성값들과 동작들을 그룹핑해서 표현하는 자료들 (자동차, 비행기, 학교 ...)
+
+
+
+###### 기본 자료형 (String, number, Boolean, undefined)
+
+* String
 
 ```
 <!DOCTYPE html>
@@ -327,7 +337,9 @@ Framework: 책장. 정해진 틀을 변경할 수 없으며 틀에 따라서 사
 </html>
 ```
 
-##### new String()
+
+
+###### new String()
 
 새로 생성된 String(객체로서 생성됨)은 바꿀수 없음.
 
@@ -348,10 +360,342 @@ Framework: 책장. 정해진 틀을 변경할 수 없으며 틀에 따라서 사
 * Number 형
   * NaN(Not a Number) - 자료값이 수치형이 아님
   * Infinity - 시스템에서 표현 가능한 최대값을 벗어난 값
-* boolean 형
+  
+* Boolean 형
+  
   * 자바스크립트에서는 정수 0과 -0 그리고 공백문자열(""), undefind형 변수, null객체는 boolean형으로 변환하면 모두 false이고, 그 외 모두는 true이다.
+  * 생성자 같지만 생성자 아니다! (대문자로 시작하는 페이크)
+  
+  ```
+  <h3> boolean형 </h3><hr>
+  
+  <script>
+  	var state, num1=0, num2=88;
+  	var str1=""; str2="Javascript";
+  	var obj1="null";
+  	var obj2=new Object();
+  	
+  	document.write(state+'<br>');
+  	document.write(num1+'<br>');
+  	document.write(num2+'<br>');
+  	document.write(str1+'<br>');
+  	document.write(str2+'<br>');
+  	document.write(obj1+'<br>');
+  	document.write(obj2+'<br>');
+  </script>
+  ```
+  
+* undefined
+
+  ```
+  <!DOCTYPE html>
+  <html>
+  <body>
+  <h2>My First JavaScript</h2><hr>
+  
+  <script>
+  var obj=new Object();
+  var num;
+  
+  document.write(obj+'<br>');
+  document.write(num+'<br><br>'); // 값이 선언되지 않은 변수는 undefined
+  
+  obj=null;
+  document.write(obj+'<br><br>');
+  
+  obj=undefined;
+  document.write(obj+'<br><br>');
+  
+  document.write((undefined==null)+'<br>');	// null값과 undefined의 값은 같은가? True
+  document.write((undefined===null)+'<br>');	// null값과 undefined의 자료형은 같은가? False
+  
+  
+  </script>
+  </body>
+  </html> 
+  ```
+
+
+
+###### typeof
+
+* 특정 자료의 자료형을 확인하는 연산자
+
+```
+<!DOCTYPE html>
+<html>
+<body>
+<h2>My First JavaScript</h2><hr>
+
+<script>
+var obj=new Object();
+var num1;
+// var Mycar;	// Mycar의 자료형은 undefined
+// var Mycar=1234;	//	Mycar의 자료형은 Number
+// var Mycar=[1234];	//	Mycar의 자료형은 Object
+// var Mycar;	// 기존에 Mycar의 값은 초기화되지 않고 남아있다. 다른 언어에서는 에러.
+
+document.write(typeof"John"+'<br>');
+document.write(typeof 3.14+'<br>');
+document.write(typeof NaN+'<br>');
+document.write(typeof false+'<br>');
+document.write(typeof true+'<br>');
+document.write(typeof 0+'<br><br>');
+
+document.write(typeof [1,2,3,4]+'<br>');	// 배열은 객체형
+document.write(typeof function(){}+'<br>');
+document.write(typeof Mycar+'<br><br>');	// 선언되지 않은 변수는 undefined
+
+document.write(typeof null+'<br>');
+document.write(typeof undefined+'<br>');
+document.write(typeof ""+'<br>');
+document.write(typeof ''+'<br>');
+
+</script>
+</body>
+</html> 
+```
 
 
 
 
+
+##### 변수 선언후 같은 변수를 다시 선언하는 일.
+
+위의 Mycar와 같이 Mycar에 값1234를 선언한 후
+
+다음에 Mycar를 다시 선언하게 된다면 Javascript에서는 에러 나지 않지만 다른 언어에서는 에러가 날 것이다.
+
+물리적인 동작에서 정상적인 코드가 아니기 때문에 프로그램은 오류를 수정하여 OK를 만드는 작업을 수행한다.
+
+이는 자원의 낭비, 퍼포먼스에 나쁜 영향을 끼친다.
+
+
+
+
+
+###### Java에서의 객체
+
+int i=10;	//	메모리에 i라는 4byte의 공간을 할당. 값을 2진수 10(1010)
+
+Integer i2=new Integer(10);	// 메모리에 i2라는 4byte의 공간 할당. 값은 객체의 주소 값이 입력됨!
+
+
+
+
+
+###### 객체 자료형 (Object, Function)
+
+* Object
+* Fuction
+
+
+
+#### 객체
+
+특정 사이트에 로그인한 후 새로운 브라우저(같은 브라우저)를 열어도 로그인이 된 상태로 브라우저가 열린다. (메모리를 공유하고 있다?!)
+
+하지만 브라우저에서 지원하는 시크릿모드로 브라우저를 열면 로그인이 되지 않은 상태로 사이트가 열린다.
+
+###### 
+
+###### DOM (Document Object Model)
+
+* Window 객체 안의 Document 객체 안의 html객체 ....
+* Window 객체는 브라우저 창을 생성할 때마다 새로 생성
+* 로그인, Cookie등의 공유 메모리는 메모리의 global 영역
+* DOM instance 영역에 html, head, body 등의 객체가 있으며 이는 브라우저의 한 창을 닫는 순간 또는 로그인 한 순간 객체는 삭제된다. 그럼에도 로그인이 유지되는 이유는 globla 영역에 로그인된 메모리가 있기 때문..
+* Script 안에 선언된 모든 변수는 Window 객체 안에 메모리된다.
+  (Window의 멤버변수)
+* 문서 내부(DOM instance)에서 Window를 언제든 바라볼 수 있다. 많은 이들이 이것을 global 영역이라고 부른다.
+  (실제 global 메모리 영역이 따로 있으니 혼동되지 않도록 구분하여야 한다.)
+
+###### BOM (Browser Object Model)
+
+
+
+* 싱글톤 객체
+
+  * 생성 방식
+
+  ```
+  var person1 = {
+  	name: "고길동",
+  	nickName: "얼음별 용사",
+  	major: "가장",
+  	age: 48
+  };
+  
+  var person2 = new Object();
+  
+  person2.name="고길동";
+  person2.nickName="얼음별 용사";
+  person2.age=48;
+  person2.major="가장";
+  ```
+
+  * 싱글톤 객체 생성 방식에서 객체변수의 입력값이 없는 것은 허용되지 않는다.
+  * 
+
+* 컨스트럭터(Constructor) 객체
+
+  * 생성 방식
+
+    ```
+    var x1=new Object();
+    var x2=new String();
+    var x3=new Number();
+    var x4=new Boolean();
+    var x5=new Array();
+    var x6=new Date();
+    
+    function person(name,year,score1,score2){
+    	this.name=name;
+    	this.year=yesr;
+    	this.score1=score1;
+    	this.score2=score2;
+    }
+    
+    var guy=new person("조우진",3,80,90);
+    var lady=new person("신은수",4,92,98);
+    ```
+
+  * 실습
+
+    ```
+    <script>
+    var person = {
+    	name: "장희재",
+    	nickName: "빠라밤",
+    	major: "후훗",
+    	age: 22,
+        weight: 70,
+        birthday: null,
+        salary: NaN
+    };
+    
+    function person2(name,nickName,major,age,weight,birthday){
+    	this.name=name;
+        this.nickName=nickName;
+        this.major=major;
+        this.age=age;
+        this.weight=weight;
+        this.birthday=birthday;
+    
+    }
+    
+    var na=new person2("장희재","후후","정복학",22,70,null)
+    
+    
+    
+    document.write(na.name+'<br>');
+    document.write(na.nickName+'<br>');
+    document.write(na.major+'<br>');
+    document.write(na.age+'<br>');
+    document.write(na.weight+'<br>');
+    document.write(na.birthday+'<br>');
+    
+    
+    </script>
+    ```
+
+    
+
+
+
+###### Object or Window
+
+```
+<script>
+var person1 = {
+	name: "장희재",
+	nickName: "빠라밤",
+	major: "후훗",
+	age: 22,
+    weight: 70,
+    birthday: null,
+    salary: NaN
+};
+
+function person(name,nickName,major,age,weight,birthday){
+	this.name=name;
+    this.nickName=nickName;
+    this.major=major;
+    this.age=age;
+    this.weight=weight;
+    this.birthday=birthday;
+    alert(this);
+}
+
+var person2 = {
+	name: "장희진",
+	nickName: "뾰롱",
+	major: "쇼가",
+	age: 20,
+    weight: 47,
+    birthday: null,
+};
+
+new person("장희재","후후","정복학",22,70,null);	// Object 객체
+person("장희재","후후","정복학",22,70,null);
+// Window 객체
+
+</script>
+```
+
+
+
+#### js(JavaScript) Prototype
+
+참조: <https://poiemaweb.com/js-prototype>
+
+* 개인 실습
+
+```
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+	function Person(){
+    }
+    Person.prototype.eyes=2;
+    Person.prototype.nose=1;
+    var p1=new Person();
+    var p2=new Person();
+    document.write(p1.eyes+":"+p1.nose);
+    document.write('<br>');
+    document.write(p2.eyes+":"+p2.nose);
+    document.write('<br>');
+    
+    p1.eyes=1;
+    document.write(p1.eyes+'<br>');
+    document.write(Person.prototype.eyes);
+    
+    document.write('<br>');
+    document.write(p2.__proto__.prototype);
+    document.write('<br>');
+    document.write(p1.__proto__.__proto__.constructor.__proto__);
+    document.write('<br>');
+    document.write(p1.__proto__.constructor);
+    document.write('<br>');
+    document.write(Person.__proto__.constructor);
+    document.write('<br>');
+    document.write(Object.constructor);
+    document.write('<br>');
+    document.write(p1.__proto__===Person.prototype);
+    // p1의 Person 프로토타입과 Person의 트로토타입이 같은지 알아보는 방법.
+    // p1.__proto__로는 Object로만 표현된다. Person prototype이라고 표시되지 않는다.
+    
+</script>
+</body>
+</html> 
+```
+
+
+
+#### 객세 생성 - 싱글톤 vs 인스턴스
+
+싱글톤 - 가지고 있는 정보를 바꾸지 않을때.
+
+인스턴스 - 
 
