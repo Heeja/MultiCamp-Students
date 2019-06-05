@@ -535,7 +535,8 @@ Integer i2=new Integer(10);	// 메모리에 i2라는 4byte의 공간 할당. 값
   ```
 
   * 싱글톤 객체 생성 방식에서 객체변수의 입력값이 없는 것은 허용되지 않는다.
-  * 
+
+  
 
 * 컨스트럭터(Constructor) 객체
 
@@ -617,13 +618,11 @@ var person1 = {
     salary: NaN
 };
 
-function person(name,nickName,major,age,weight,birthday){
+function person(name,nickName,major,age){
 	this.name=name;
     this.nickName=nickName;
     this.major=major;
     this.age=age;
-    this.weight=weight;
-    this.birthday=birthday;
     alert(this);
 }
 
@@ -645,7 +644,7 @@ person("장희재","후후","정복학",22,70,null);
 
 
 
-#### js(JavaScript) Prototype
+#### js(JavaScript) Prototype Chain
 
 참조: <https://poiemaweb.com/js-prototype>
 
@@ -693,9 +692,77 @@ person("장희재","후후","정복학",22,70,null);
 
 
 
-#### 객세 생성 - 싱글톤 vs 인스턴스
+#### 객세 생성 - 싱글톤 vs 컨스트럭터
 
 싱글톤 - 가지고 있는 정보를 바꾸지 않을때.
 
-인스턴스 - 
+컨스트럭터 - 
+
+
+
+
+
+```
+<script>
+var p1={	// {}컬리브레이스를 주는 순간 p1은 객체로 생성
+	eyes=3,
+	nose=4
+}
+document.write(p1.__proto__===Object.prototype); // true
+document.write(Object===p1.constructor); // true
+</script>
+```
+
+
+
+객체를 생성하는 2가지 방법
+
+1. 객체리터럴 사용
+
+   ```
+   var p1 = { name: "OOO" }
+   ```
+
+   
+
+2. Object 생성자를 직접 이용
+
+   ```
+   var p2 = new Object();
+   p2.name="OOO";
+   ```
+
+   
+
+3. 사용자 지정 생성자 이용
+
+   ```
+   function Person(name){
+   // 지정 생성자 이름은 대문자로 시작하는 것이 좋다
+   	this.name=name;
+   }
+   ```
+
+   ```
+   var Person=function(name){
+   // function의 객체 주소를 Person이 할당 받다.
+   	this.name=name;
+   }
+   ```
+
+
+
+**hasOwnProperty**
+
+```
+<script>
+    var p1={
+        eyes:3,
+        nose:4
+    }
+    document.write(p1.hasOwnProperty('eyes')); // true
+</script>
+```
+
+
 
