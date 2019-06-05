@@ -766,3 +766,56 @@ document.write(Object===p1.constructor); // true
 
 
 
+JS Strict Mode
+
+
+
+JS Hosting
+
+* 변수로 선언하는 것을 맨 위로 끌어올리다.
+
+* 선언과 정의
+
+  ```
+  fn();	//error
+  var fn=function() {alert("test");}
+  
+  fn2();	//ok
+  function() var fn2={alert("test");}
+  ```
+
+  
+
+**Javascript에서의 배열(array)**
+
+* Java에서는 선언된 배열의 length를 변경할 수 없지만,
+  JavaScript에서는 선언된 배열의 length를 추가할 수 있다.
+
+  ```
+  <!DOCTYPE html>
+  <html>
+      <head>
+      <script>
+          var student=[88,92,76];
+  
+          document.write("<hr>배열 student크기: "+student.length+"<br>");
+          for(i=0;i<student.length;i++){
+              document.write("student["+i+"]=");
+              document.write(student[i]+"<br>");
+          }
+          student[6]=84;  // 동적 배열 크기 확장
+          student[4]="결석";
+          document.write("<hr>배열 student 크기: "+student.length+"<br>");
+          for(i=0;i<student.length;i++){
+              document.write("student["+i+"]="+student[i]+"<br>");
+          }
+      </script>
+      </head>
+      <body>
+                  
+      </body>
+  </html>
+  ```
+
+  
+
