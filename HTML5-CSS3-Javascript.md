@@ -644,7 +644,9 @@ person("장희재","후후","정복학",22,70,null);
 
 
 
-#### js(JavaScript) Prototype Chain
+### js(JavaScript) Prototype Chain
+
+**매우 중요하다!!**
 
 참조: <https://poiemaweb.com/js-prototype>
 
