@@ -825,3 +825,16 @@ JS Hosting
 
 * form 태그 안에서 button을 통해 function을 호출하여 setTimeout()을 수행할 경우 수행되지 않는다.
 * form 태그 밖으로 button이 나와야 setTimeout()을 수행한다.
+
+
+
+
+
+#### CRUD
+
+대부분의 Softeware가 가지는 기본적인 데이터 처리 기능
+
+* Create
+* Reading
+* Update
+* Delete
