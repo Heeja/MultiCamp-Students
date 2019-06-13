@@ -838,3 +838,29 @@ JS Hosting
 * Reading
 * Update
 * Delete
+
+
+
+### JS Style Guide & Perfomance (추가 필요!)
+
+1. ###### Don't Use new Object()
+
+   - Use `{}` instead of `new Object()`
+   - Use `""` instead of `new String()`
+   - Use `0` instead of `new Number()`
+   - Use `false` instead of `new Boolean()`
+   - Use `[]` instead of `new Array()`
+   - Use `/()/` instead of `new RegExp()`
+   - Use `function (){}` instead of `new Function()`
+
+2. ###### 반복문, 조건문 사용시 주의
+
+   - **if문**
+     간단한 if문에 else를 꼭 사용하도록 한다.
+     조건 외의 경우를 반드시 거부하는 코드를 해주는 것이 좋다.
+   - **switch문**
+     case 외의 조건에 default를 꼭 넣는다.
+
+3. DOM  접근을 줄이기
+
+4. DOM 사이즈를 축소
