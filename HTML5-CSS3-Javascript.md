@@ -864,3 +864,11 @@ JS Hosting
 3. DOM  접근을 줄이기
 
 4. DOM 사이즈를 축소
+
+
+
+#### XHR (XMLHttpRequest)
+
+* 비동기 통신 객체
+* 웹 브라우저와 웹 서버 간에 메소드가 데이터를 전송하는 객체 폼의 API이다. 이 객체는 브라우저의 자바스크립트 환경에 의해 제공된다.
+* form Tag 안에 Name 속성이 있는 Tag들의 value를 Submit(서버로 전송)한다.
