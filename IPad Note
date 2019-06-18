@@ -50,3 +50,4 @@ border-style - 테두리 형태
 border-color - 선의 색상
 border 속성은 border-left, border-left-width와 같은 방식으로 속성명을 조합하여 사용.
 border 만 선언할 경우 단축 속성
+
