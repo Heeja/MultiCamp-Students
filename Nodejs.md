@@ -193,6 +193,169 @@ HTML5 에서는 4ms, Node에서는 1ms의 지연시간을 갖는다.
 
 
 
+##### 템플릿 문자열
+
+* Javascript에서는 큰따옴표(""), 작은따옴표('')로 감쌌다면, Node에서는 **백틱(``)**으로 감싼다.
+  (백틱은 ~을 그냥 눌렀을때!)
+
+```
+const num4=2;
+const result2=3;
+const string2=`${num3}더하기 ${num4} 는 '${result2}'`;	// 여기가 백틱을 사용하는 부분
+console.log(string2); */
+```
+
+
+
+##### 객체 리터럴
+
+* 객체의 메서드에 함수를 연결할 때 콜론(:), function을 생략해도 된다.
+
+* 객체의 속성명을 동적으로 생성할 수 있다.
+
+  > 기존 문법(ES2015이전)에서는 속성명을 만들려면 객체 리터럴 밖에 작성해야 했다면, ES2015+부터는 객체 리터럴 안에 작성해도 된다.
+
+**ES2015 이전 문법**
+
+```
+// ES2015 이전 문법
+var sayNode=function(){
+    console.log('Node');
+}
+var es='ES';
+
+var oldObject={
+    sayJS: function(){
+        console.log('JS');
+    },
+    //sayNode: sayNode
+    a: sayNode  // 왼쪽이 변수 이름. 오른쪽이 참조값. 여기서는 위에 saynode.
+};
+oldObject[es+6]='Fantastic';    // oldObject.ES6='Fantastic' 와 같은 구문
+
+//oldObject.sayNode();      // Node 출력
+oldObject.a();              // Node 출력
+oldObject.sayJS();          // JS 출력
+console.log(oldObject.ES6); // Fantastic 출력
+```
+
+**ES2015+ 부터 문법**
+
+```
+// ES2015+ 문법
+const sayNode=function(){
+    console.log('Node');
+}
+const es='ES';
+const newObject={           // 객체 {}
+    sayJS(){
+        console.log('JS');  //
+    },
+    sayNode,                // 같은 이름의 변수나 Function이 있어 이름만 쓰였다.
+    [es+6]: 'Fantastic',    //  
+};
+
+// newObject.sayNode();
+sayNode();
+newObject.sayJS();
+console.log(newObject.ES6);
+```
+
+
+
+##### 화살표 함수(Arrow function)
+
+* 사용방법은 아래의 코드스펜을 확인 해주세요.
+
+* funtion 선언 대신 '**=>**' 기호로 함수를 선언한다. ('= >' 사이 띄어쓰기 안됨!)
+
+  > function add1(x,y){return x+y;} >>> const add1=(x,y) =>{return x+y;}
+  >
+  > function not1(x){return !x;} >>> const not2= x => !x;
+
+* return문을 줄일수 있다.
+
+  > const add3 = (x,y) => x+y;
+  >
+  > const add4 = (x,y) => (x+y);
+
+* **<u>this 바인드</u>** (짱 중요!)
+
+```
+var relationship1={
+    name:'zero',
+    friends: ['nero','hero','xero'],
+    logFriends: function(){
+        //console.log(this);                    // name, friends, logFriends
+        var that=this;                          // relationship1을 가르키는 this
+        //console.log(that);
+        //console.log(that.friends[2]);
+        this.friends.forEach(function(friend){
+            console.log(that.name,friend);		// this=global(=forEach)
+        })
+    }
+};
+relationship1.logFriends();
+console.log("\n");
+
+const relationship2={
+    name:'zero',
+    friends: ['nero','hero','xero'],
+    logFriends(){
+        var that=this;
+        this.friends.forEach(friend => {	// this=relationship2.
+            console.log(this.name,friend);  // 여기서 this를 사용할 수 있다.
+        })
+    }
+}
+relationship2.logFriends();
+```
+
+##### 비구조화 할당
+
+* 객체와 배열로부터 속성이나 요소를 쉽게 꺼낼 수 있다.
+
+```
+const candyMachine={
+     status:{
+         name:'node',
+         count:5,
+     },
+     getCandy(){
+         this.status.count--;
+         return this.status.count;
+     },
+     a:10,
+     b:20,
+     c:50,
+     d:{
+         name: 'pupop',
+         decount: 100,
+     }
+};
+const {getCandy,status:{count},a,b,c,d:{name,decount}}=candyMachine;
+// candyMachine 안에 getCandy와 status의 count를 선언. 끄집어 빼오는 형식(?)
+```
+
+* 배열의 비구조화
+
+  > var array=['nodejs',{},10,true];
+  >
+  > var node=array[0];
+  >
+  > var obj=array[1];
+  >
+  > var bool=array[3];
+
+|          기존 배열구조           |           비구조화 배열            |
+| :------------------------------: | :--------------------------------: |
+| var array=['nodejs',{},10,true]; | const array=['nodejs',{},10,true]; |
+|        var node=array[0];        |   const [node,obj, ,bool]=array;   |
+|        var obj=array[1];         |                                    |
+|        var bool=array[3];        |                                    |
+
+
+
 
 
 #### 3.3 모듈
