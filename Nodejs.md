@@ -339,6 +339,8 @@ const {getCandy,status:{count},a,b,c,d:{name,decount}}=candyMachine;
 
 * 배열의 비구조화
 
+  > // 기존 배열 구조
+  >
   > var array=['nodejs',{},10,true];
   >
   > var node=array[0];
@@ -346,13 +348,14 @@ const {getCandy,status:{count},a,b,c,d:{name,decount}}=candyMachine;
   > var obj=array[1];
   >
   > var bool=array[3];
-
-|          기존 배열구조           |           비구조화 배열            |
-| :------------------------------: | :--------------------------------: |
-| var array=['nodejs',{},10,true]; | const array=['nodejs',{},10,true]; |
-|        var node=array[0];        |   const [node,obj, ,bool]=array;   |
-|        var obj=array[1];         |                                    |
-|        var bool=array[3];        |                                    |
+  >
+  > -----------------------------------------
+  >
+  > // 배열의 비구조화
+  >
+  > const array=['nodejs',{},10,true];
+  >
+  > const [node,obj, ,bool]=array;
 
 
 
@@ -362,7 +365,12 @@ const {getCandy,status:{count},a,b,c,d:{name,decount}}=candyMachine;
 
 * 노드는 코드를 모듈로 만들 수 있다는 점에서 브라우저의 자바스크립트와 다르다.
 * 모듈: 특정한 기능을 하는 함수나 변수들의 집합
-* 보통 파일 하나가 모듈 하나가 된다.
+* **보통 파일 하나가 모듈 하나가 된다.**
 
 
 
+##### This
+
+* Java에서는 선언시 this를 결정
+* Javascript에서는 실행시 this를 결정
+  자신을 호출한 객체와 바인딩이 일어난다.
