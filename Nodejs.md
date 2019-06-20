@@ -374,3 +374,4 @@ const {getCandy,status:{count},a,b,c,d:{name,decount}}=candyMachine;
 * Java에서는 선언시 this를 결정
 * Javascript에서는 실행시 this를 결정
   자신을 호출한 객체와 바인딩이 일어난다.
+
