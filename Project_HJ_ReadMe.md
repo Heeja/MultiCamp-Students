@@ -57,13 +57,14 @@
            const loginEmail = $("input[name=login_email]", document.loginReq).val();
            const loginPaswdd = $("input[name=login_paswdd]", document.loginReq).val();
            const RememID = $("input[name=RememID]", document.loginReq).val();
+           // Input tag에 지정한 name을 $('input[name=지정한 name]',)으로 작성하고
+   				// ',' 뒤에는 document.formID)를 작성한다. 맨 뒤에는 .val()으로 입력값을 받는다!
    
            const send_params = {
                loginEmail,
                loginPaswdd,
                RememID,
            };
-   // 정보를 보내는 form의 name을 document.뒤에 써주고, form의 input tag의 name을 위와 같이 지정해주면 그곳을 찾는다. 뒤에 .val()은 입력값 받기.
    // 출처: https://hivery.tistory.com/20 [하이베리의 소소한 일상])
    ```
 
@@ -77,7 +78,32 @@
    tag ID가 loginReqID인 submit작업에 반응 하도록 하였다.
    이렇게 되면 해당 웹페이지에 여러 form tag를 작성했을때 조금더 효율적이지 않을까 생각이 든다.
 
-5. 
+   
+
+### Login, Join CSS 수정하기
+
+1. Login, Join 팝업 창을 위해 modal을 사용했었다.
+   class를 설정해준 김에 사용하여 css를 수정하도록 하였다.
+
+2. nav - li tag안의 'modalLoginLink'과 'modalJoinLink' class명을 설정한 tag의 배경색과 글자색을 변경! 
+
+   ```
+   #nav li .modalLoginLink, #nav li .modalJoinLink {
+   			background-color: rgba(255, 0, 0, 0.541);
+   			color: black;
+   		}
+   ```
+
+3. hover 기능 또한 주어서 다른 버튼과 다르게 보이도록 해본다.
+   위에서 설정한 tag에 :hover를 추가하여 마우스 오버상태 일 때 변경될 배경색상과 글자색을 지정한다.
+   (2,3번 두 개 다 추가하는 것!)
+
+   ```
+   #nav li .modalLoginLink:hover, #nav li .modalJoinLink:hover {
+   			background-color: rgb(96, 192, 139);
+   			color: #3C5A98;
+   		}
+   ```
 
 
 
