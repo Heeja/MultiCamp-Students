@@ -91,3 +91,13 @@ DB기능 설계: 방법론 없이. 애자일 방식 (Fair or Single에 적합)
 
 * NULL을 우선 허용한다.
 * 제약은 주지 않는다.
+
+
+
+
+
+### auto_increment 초기화
+
+alter table [table name] auto_increment=[값];
+
+- **단! 값은 auto_increment가 적용되어 생성된 최종 값보다 작을 수 없다.**
