@@ -872,3 +872,136 @@ JS Hosting
 * 비동기 통신 객체
 * 웹 브라우저와 웹 서버 간에 메소드가 데이터를 전송하는 객체 폼의 API이다. 이 객체는 브라우저의 자바스크립트 환경에 의해 제공된다.
 * form Tag 안에 Name 속성이 있는 Tag들의 value를 Submit(서버로 전송)한다.
+
+
+
+### API (From. W3Schools.com)
+
+* 위치정보 API
+
+```
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Click the button to get your coordinates.</p>
+
+<button onclick="getLocation()">Try It</button>
+
+<p id="demo"></p>
+
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+  // geolocation에서 현재 위치를 알려주고 뒤에 Callback Function(showPosition)로 받는다.
+  navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+// latitude: 위도, longitude: 경도
+  x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+}
+</script>
+
+</body>
+</html>
+```
+
+
+
+#### Drop&Drag
+
+이미지를 드래그하여 div공간에 drop하면 이미지가 div안에 들어간다!
+
+
+
+```
+<script>
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+  ev.target.appendChild(document.getElementById(data));
+}
+</script>
+<body>
+
+<p>Drag the W3Schools image into the rectangle:</p>
+
+<div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<br>
+<img id="drag1" src="img_logo.gif" draggable="true" ondragstart="drag(event)" width="336" height="69">
+
+</body>
+```
+
+* ondrop="drop(event)" : 드랍할 경우 drop(event)를 실행.
+* ondragover="allowDrop(event)" : 드랍을 혀용한다.
+* 
+
+
+
+#### Web Storage
+
+* Web Browser. Window에 있는 저장소.
+* localStorage: 지우기 전까지는 데이터가 남아있는다. 사용x
+* sessionStorage: 세션이 만료되면 함께 삭제된다.
+
+
+
+#### Web Worker
+
+* 사용 이유: Callback Function처럼 일을 분산하기 위해서 (쓰레드 사용!)
+  * 예1) 용량이 큰 파일을 업로드할 때 업로드가 다 될때까지 기다리지 않고 백그라운드로 업로드하고, 사용자는 다른 일을 할 수 있도록..
+
+
+
+#### SSE (Server-Sent Event)
+
+사용자가 컨트롤 하지 않아도 서버와 통신하도록하여 'SNS알림', '뉴스피드' 등을 변하도록 하는 이벤트.
+
+* PHP
+
+  ```
+  <?php
+  header('Content-Type: text/event-stream');
+  header('Cache-Control: no-cache');
+  
+  $time = date('r');
+  // echo: client로 보내지는 정보
+  echo "data: The server time is: {$time}\n\n";
+  flush();
+  ?>
+  ```
+
+* ASP
+
+  ```
+  <%
+  Response.ContentType = "text/event-stream"
+  Response.Expires = -1
+  // Response.write: Client로 보내지는 정보
+  Response.Write("data: The server time is: " & now())
+  Response.Flush()
+  %>
+  ```
+
+  
+
+
+
+
+
