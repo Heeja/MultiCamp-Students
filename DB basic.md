@@ -131,7 +131,10 @@ alter table [table name] auto_increment=[값];
 
 
 
+### Sequelize View
 
+참고 사이트
+**http://webframeworks.kr/tutorials/expressjs/expressjs_orm_one/**
 
 
 
