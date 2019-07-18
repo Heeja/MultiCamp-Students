@@ -104,18 +104,39 @@ alter table [table name] auto_increment=[값];
 
 
 
-#### MySQL View Table 만들기
+#### MySQL View Table
 
-```
-CREATE VIEW [테이블명] AS SELECT
-D1.[D1의 컬럼명] AS '[새로 지정할 컬럼이름]',
-D1.nMoney AS 'Money',
-D2.strJukyo AS 'Jukyo',
-FROM_UNIXTIME(D1.nDate) AS 'Date'
-FROM [테이블명1] AS D1 INNER JOIN
-[테이블명2] AS D2
-ON (D2.idx = D1.idx);
-```
+1. #####Create View
 
-**출처: https://jepi.tistory.com/129 [jepi free programming]**
+   ```
+   CREATE VIEW [테이블명] AS SELECT
+   D1.[D1의 컬럼명] AS '[새로 지정할 컬럼이름]',
+   D1.nMoney AS 'Money',
+   D2.strJukyo AS 'Jukyo',
+   FROM_UNIXTIME(D1.nDate) AS 'Date'
+   FROM [테이블명1] AS D1 INNER JOIN
+   [테이블명2] AS D2
+   ON (D2.idx = D1.idx);
+   ```
 
+   **출처: https://jepi.tistory.com/129 [jepi free programming]**
+
+2. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### Sequelize View Table
+
+* 어렵다… 사용 못함… 누가 알려줬으면...
+
+**출처: https://github.com/abelosorio/sequelize-views-support**
