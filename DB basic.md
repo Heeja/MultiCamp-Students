@@ -101,3 +101,21 @@ DB기능 설계: 방법론 없이. 애자일 방식 (Fair or Single에 적합)
 alter table [table name] auto_increment=[값];
 
 - **단! 값은 auto_increment가 적용되어 생성된 최종 값보다 작을 수 없다.**
+
+
+
+#### MySQL View Table 만들기
+
+```
+CREATE VIEW [테이블명] AS SELECT
+D1.[D1의 컬럼명] AS '[새로 지정할 컬럼이름]',
+D1.nMoney AS 'Money',
+D2.strJukyo AS 'Jukyo',
+FROM_UNIXTIME(D1.nDate) AS 'Date'
+FROM [테이블명1] AS D1 INNER JOIN
+[테이블명2] AS D2
+ON (D2.idx = D1.idx);
+```
+
+**출처: https://jepi.tistory.com/129 [jepi free programming]**
+
