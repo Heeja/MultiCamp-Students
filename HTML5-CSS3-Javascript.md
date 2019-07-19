@@ -1005,3 +1005,7 @@ function drop(ev) {
 
 
 
+#### forEach문
+
+* 이렇게 사용해보자
+  

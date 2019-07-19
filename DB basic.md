@@ -94,8 +94,6 @@ DB기능 설계: 방법론 없이. 애자일 방식 (Fair or Single에 적합)
 
 
 
-
-
 ### auto_increment 초기화
 
 alter table [table name] auto_increment=[값];
@@ -104,7 +102,25 @@ alter table [table name] auto_increment=[값];
 
 
 
-#### MySQL View Table
+### Join
+
+![img](http://rapapa.net/wp/wp-content/uploads/2012/06/Visual_SQL_JOINS_V2.png)
+
+참조 사이트: http://rapapa.net/?p=311
+
+* 동일한 컬럼 값을 가진 Select 표시
+
+  ```
+  SELECT Orders.OrderID, Customers.CustomerName
+  FROM Orders
+  INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
+  ```
+
+  
+
+
+
+### MySQL View Table
 
 1. #####Create View
 
@@ -121,7 +137,16 @@ alter table [table name] auto_increment=[값];
 
    **출처: https://jepi.tistory.com/129 [jepi free programming]**
 
-2. 
+2. ##### Alter View
+
+   ```
+   ALTER VIEW 뷰_이름 AS SELECT 칼럼_이름 FROM 테이블_이름;
+   ```
+
+   출처: https://recoveryman.tistory.com/181 [회복맨 블로그]
+   사용해 보았지만.. view 테이블 망가짐. (정확한 사용법 숙지 필요)
+
+3. 
 
 
 
@@ -143,3 +168,27 @@ alter table [table name] auto_increment=[값];
 * 어렵다… 사용 못함… 누가 알려줬으면...
 
 **출처: https://github.com/abelosorio/sequelize-views-support**
+
+
+
+
+
+
+
+create view patientsview as
+
+select t1.email_id as 'email',
+
+t1.name as 'name',
+
+t1.gender as 'gender',
+
+t2.tel as 'telnumber',
+
+t2.disease as 'disease',
+
+t2.createdAt as 'treatdate',
+
+from users as t1 inner join patientsinfos as t2
+
+ on (t1.tel = t2.tel);
