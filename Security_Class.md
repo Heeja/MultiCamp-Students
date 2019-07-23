@@ -382,5 +382,44 @@ CWE-327
 
 
 
+## OWASP Top 10 - 2013
+
+A7: 기능 수준의 접근 통제 누락 - 회원가입 페이지에서 게시판 조회기능이 있거나 그런...
+
+A9: 알려진 취약점이 있는 컨포넌트 사용
+
+##### [Exploit Database](http://www.exploit-db.com)
 
 
+
+
+
+##### [Android Secure Coding Guide](https://www.jssec.org/dl/android_securecoding_en.pdf)
+
+
+
+
+
+## 소프트웨어 개발보안 가이드
+
+​	[행정안전부 소프트웨어 개발 보안 가이드](https://www.mois.go.kr/frt/bbs/type001/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000015&nttId=57473)
+
+
+
+### 설계단계 보안요구항목
+
+
+
+### [SDL](#SDL)
+
+|     분석(설계)     |           구현           | 테스트 | 배포(이행) |
+| :----------------: | :----------------------: | :----: | :--------: |
+| 20개 보안 요구사항 | 47개 보안 약점, 소스코드 |        |            |
+
+요구사항 정의서
+
+1. 정적 쿼리
+2. 동적 쿼리 입력값 검증
+3. 사용자 권한 Down
+
+추적표
