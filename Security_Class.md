@@ -460,3 +460,17 @@ A9: 알려진 취약점이 있는 컨포넌트 사용
 
 
 
+![img](https://lh5.googleusercontent.com/5qqpIqjJSXiuBrDbjQvW3UqnAWkjXdgFe2uMK8JD65yMg1dehnarxVHXeWtTfhnx3F8W2Ax6NDKwFWZMuYQWw9b0Duy27EB-mTf5dKGLHMs4YxLRJJ2mc2NOaxtK8MMzT1gtIClV)
+
+
+
+#### MS-SDL(Microsoft SDL)
+
+MS에서는 보안 수준이 높은 소프트웨어를 개발하기 위해 다음 3가지 요소가 필요하다고 정의한다.
+
+1. 반복 가능한 프로세스
+2. 엔지니어 교육
+3. 측정 기준 및 책임성
+
+
+
