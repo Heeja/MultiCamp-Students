@@ -541,25 +541,21 @@ MS에서는 보안 수준이 높은 소프트웨어를 개발하기 위해 다�
 
 
 
+#### Hash 버전
 
+- MD5는 사용 X (벌써 깨졌음)
+- SHA버전 중 SHA-2(256,224) 이상으로. 곧 2도 깨질거같음.
+  [SHA 위키백과](https://ko.wikipedia.org/wiki/SHA)
+
+
+
+## 웹 어플리케이션 보안을 위한 기본 지식
 
 #### Proxy
 
 * 네트워크 패킷을 캐싱하여 준다.
 * 캐싱된 패킷을 가지고 요청/응답에 대해 모니터링과 분석을 할 수 있다.
 * N/W설정을 통해 Proxy 연동 사용
-
-
-
-
-
-#### Hash 버전
-
-* MD5는 사용 X (벌써 깨졌음)
-* SHA버전 중 SHA-2(256,224) 이상으로. 곧 2도 깨질거같음.
-  [SHA 위키백과](https://ko.wikipedia.org/wiki/SHA)
-
-
 
 
 
@@ -577,3 +573,259 @@ MS에서는 보안 수준이 높은 소프트웨어를 개발하기 위해 다�
 [Spring MVC 프레임워크 처리 구조](https://zetawiki.com/wiki/스프링_MVC_처리구조)
 
 ![img](http://pic002.cnblogs.com/images/2012/93867/2012101109363253.jpg)
+
+
+
+시작: Method _ URI _ HTTP.1.0  _ 200 _ OK 
+
+* Method Type: **GET**, **POST**, OPTIONS, HEAD, PUT, DELETE
+* HTTP 응답 상태 코드
+
+| 상태코드 |               설명                |
+| :------: | :-------------------------------: |
+|   1xx    |           정보를 제공함           |
+|   2xx    |     요청이 성공적으로 이뤄짐      |
+|   3xx    | 요청한 해당 자원이 다른 곳에 있음 |
+|   4xx    |        요청에 문제가 있음         |
+|   5xx    |        서버에 에러가 있음         |
+
+
+
+헤더: Content-Type 
+
+​		Content-Length
+
+​		Referer, Cookie
+
+​	
+
+##### nc를 이용한 HTTP 메소드 테스트
+
+nc KALI#1_IP 80↳ ⇐ 웹서버에 연결
+
+GET / HTTP/1.0↳  ⇐ 요청 시작
+
+↳            				 ⇐ 요청 헤더의 끝
+
+
+
+```
+root@kali:~# nc 192.168.49.128 80 ⇐ 연결
+GET / HTTP/1.0 ⇐ 요청 시작
+ ⇐ 요청 헤더 끝
+HTTP/1.1 200 OK ⇐ 응답 시작 
+Date: Wed, 24 Jul 2019 07:31:17 GMT ⇐ 응답 헤더
+Server: Apache/2.4.23 (Debian)
+Set-Cookie: PHPSESSID=lchio2qconjrv4p74cksmp4mp4; path=/
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Vary: Accept-Encoding
+Content-Length: 498
+Connection: close
+Content-Type: text/html; charset=UTF-8
+ ⇐ 응답 헤더 끝
+<html> ⇐ 응답 본문
+<body>
+	<form action="login.php" method="post">
+	Username : <input type="text" name="username" size="10" required />
+	Password : <input type="password" name="password" size="10" required />
+	<input type="submit" name="login" value="Login" />
+	</form>
+	<br/>
+	<table width="580" border="1" cellpadding="2" style="border-collapse:collapse">
+	<tr>
+		<th width="30">number</th>
+		<th width="300">title</th>
+		<th width="50">name</th>
+		<th width="60">date</th>	
+	</tr>
+	</table>
+</body>
+</html>
+
+root@kali:~#
+```
+
+* openeg 사이트에서 제공하는 메소드 목록을 확인
+
+  ```
+  root@kali:~# nc 192.168.49.1 8080↳ ⇐ 연결
+  OPTIONS / HTTP/1.0↳ ⇐ 요청
+  ↳
+  HTTP/1.1 200 OK ⇐ 응답
+  Server: Apache-Coyote/1.1
+  Allow: GET, HEAD, POST, PUT, DELETE, OPTIONS ⇐ 해당 서버는 6개의 메소드를 제공한다.
+  Content-Length: 0
+  Date: Wed, 24 Jul 2019 07:35:23 GMT
+  Connection: close
+  
+  root@kali:~#
+  ```
+
+  
+
+* openeg 사이트에 GET 방식의 요청과 HEAD 방식의 요청 결과를 비교
+
+  ```
+  root@kali:~# nc 192.168.49.1 8080↳ ⇐ 연결
+  GET /openeg/login.do HTTP/1.0↳ ⇐ GET 방식의 요청
+  
+  HTTP/1.1 200 OK ⇐ GET 방식 요청에 대한 응답
+  Server: Apache-Coyote/1.1                                          ⇐ 응답 헤더
+  Set-Cookie: JSESSIONID=055EE06171EA9E955B76BADA20863367; Path=/openeg
+  Content-Type: text/html;charset=UTF-8
+  Content-Language: ko-KR
+  Content-Length: 3681
+  Date: Wed, 24 Jul 2019 07:39:52 GMT
+  Connection: close                                                  
+                                                                     ⇐ 응답 헤더의 끝
+  ⇐ 응답 본문의 시작
+  
+  
+  
+  <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+  <html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Login</title>
+  <link href="/openeg/css/main.css" rel="stylesheet"
+  	type="text/css">
+           :
+  <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+  		    <div id="aside">
+  				
+  				
+  				<form action="login.do" method="post">
+  					<fieldset>
+  						<center>
+  							<label for="userId">메일주소 : </label> <input type="text"
+  								id="userId" name="userId" class="loginInput" value="" />
+  							<span class="error"></span><br />
+  							<label for="userPw">비밀번호 : </label> <input type="password"
+  								id="userPw" name="userPw" class="loginInput" /> <span
+  								class="error"></span><br />
+  							<br /> <input type="submit" value="로그인" class="submitBt" /> <input
+  								type="button" value="회원가입" class="submitBt"
+  								onClick='window.open("member/join.do","_blank","width=400,height=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no");' />
+  						</center>
+  					</fieldset>
+  				</form>		    </div>
+  			<div id="footer">
+                                 :
+  </body>
+  </html>⇐ 응답 본문의 끝
+  
+  root@kali:~# nc 192.168.49.1 8080↳ ⇐ 연결
+  HEAD /openeg/login.do HTTP/1.0↳ ⇐ HEAD 방식의 요청
+  
+  HTTP/1.1 200 OK ⇐ HEAD 방식 요청 결과
+  Server: Apache-Coyote/1.1                                              ⇐ 응답 헤더
+  Set-Cookie: JSESSIONID=170194BCC4622C98AB74D7AC810A7371; Path=/openeg
+  Content-Type: text/html;charset=UTF-8
+  Content-Language: ko-KR
+  Content-Length: 3681
+  Date: Wed, 24 Jul 2019 07:40:13 GMT
+  Connection: close
+                                                                        ⇐ 응답 헤더 끝
+  ```
+
+* openeg 사이트에 PUT 메소드를 이용해서 자원을 생성
+
+  ```
+  root@kali:~# nc 192.168.49.1 8080
+  PUT /hello.html HTTP/1.0
+  Content-Type: text/html
+  Content-Length: 42
+  
+  <html><body>Hello, World!!!</body></html>
+  HTTP/1.1 403 Forbidden
+  Server: Apache-Coyote/1.1
+  Content-Type: text/html;charset=utf-8
+  Content-Length: 964
+  Date: Wed, 24 Jul 2019 07:54:02 GMT
+  Connection: close
+  
+  <html><head><title>Apache Tomcat/6.0.24 - Error report</title><style><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status 403 - </h1><HR size="1" noshade="noshade"><p><b>type</b> Status report</p><p><b>message</b> <u></u></p><p><b>description</b> <u>Access to the specified resource () has been forbidden.</u></p><HR size="1" noshade="noshade"><h3>Apache 
+  
+  root@kali:~#
+  ```
+
+* **Q1.** Kali#2에서 HTTP 메소드를 이용해서 openeg 사이트의 hello.html 파일을 삭제해 보세요.
+
+  ```
+  root@kali:~# nc 192.168.111.1 8080
+  DELETE /hello.html HTTP/1.0
+  
+  HTTP/1.1 204 No Content
+  Server: Apache-Coyote/1.1
+  Date: Wed, 24 Jul 2019 08:26:03 GMT
+  Connection: close
+  root@kali:~#
+  ```
+
+* **Q2.** Kali#2에서 HTTP PUT 메소드를 이용해서 openeg 사이트의 hello.html 파일을 2번 생성해 보세요.
+
+  ```
+  root@kali:~# nc 192.168.111.1 8080
+  PUT /hello.html HTTP/1.0
+  Content-Type: text/html
+  Content-Length: 42
+  
+  <html><body>Hello, World!!!</body></html>
+  HTTP/1.1 201 Created
+  Server: Apache-Coyote/1.1
+  Content-Length: 0
+  Date: Wed, 24 Jul 2019 08:28:09 GMT
+  Connection: close
+  
+  root@kali:~# nc 192.168.111.1 8080
+  PUT /hello.html HTTP/1.0
+  Content-Type: text/html
+  Content-Length: 42
+  
+  <html><body>Hello, World!!!</body></html>
+  HTTP/1.1 204 No Content
+  Server: Apache-Coyote/1.1
+  Date: Wed, 24 Jul 2019 08:28:14 GMT
+  Connection: close
+  
+  root@kali:~# nc 192.168.111.1 8080
+  PUT /hello.html HTTP/1.0
+  Content-Type: text/html
+  Content-Length: 42
+  
+  <html><body> WOW WOO WO helaksjdawlkj</body></html>
+  HTTP/1.1 204 No Content
+  Server: Apache-Coyote/1.1
+  Date: Wed, 24 Jul 2019 08:37:49 GMT
+  Connection: close
+  
+  root@kali:~#
+  ```
+
+
+
+### 인증과 인가
+
+
+
+#### 인증방식
+
+| 인증방식               | 설명                                                         |
+| ---------------------- | ------------------------------------------------------------ |
+| Type.1 (인식기반)      | 자신이 알고 있는 것으로 인증한다.<br />Ex) 패스워드, 일회용 패스워드(OTP), 개인식별번호(PIN) |
+| Type.2 (소유기반)      | 자신이 가지고 있는 것으로 인증한다.<br />Ex) 메모리카드, 스마트카드, 마그네틱카드 |
+| Type.3 (신체 특징기반) | 사용자의 고유 특징으로 인증한다.<br />Ex) 홍채, 지문, 정맥, 음성, 서명(필체) |
+
+
+
+#### 인가를 위한 접근 통제 기술
+
+| 접근통제 기술                                           | 설명                                                         |
+| ------------------------------------------------------- | ------------------------------------------------------------ |
+| 접근제어목록<br />(ACL: Access Control List)            | 사용자, 자원 중심의 목록을 작성하여 목록에 비교하여 접근 통제 |
+| 접근통제표<br />(ACM: Access Control Matrix)            | 자원 중심의 접근통제 표를 작성하여 접근 통제                 |
+| 강제적 접근통제<br />(MAC: Mandatory Access Control)    | 사용자와 자원에 적절한 보안등급(레이블)을 부여하여 통제      |
+| 역할기반 접근통제<br />(RBAC: Role Base Access Control) | 사용자에게 역할(Role)을 부여하고 각 역할 별로 권한을 부여.   |
+
