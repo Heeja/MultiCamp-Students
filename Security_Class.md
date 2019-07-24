@@ -321,17 +321,17 @@ search.jsp?고객번호=123
 
 ## 구성요소 간 안전하지 않은 상호작용
 
-CWE-89: [SQL Injection](#SQL Injection (CWE-89))
+**CWE-89**: [SQL Injection](#SQL Injection (CWE-89))
 
-CWE-78: [Command Injection](#Command Injection (CWE-78))
+**CWE-78**: [Command Injection](#Command Injection (CWE-78))
 
-CWE-79: [XXS](#XSS공격 (Cross-Site Scripting) (CWE-79))
+**CWE-79**: [XXS](#XSS공격 (Cross-Site Scripting) (CWE-79))
 
-CWE-434: 위험한 유형의 파일 업로드를 제한하지 않은 것
+**CWE-434**: 위험한 유형의 파일 업로드를 제한하지 않은 것
 
-CWE-352: 사이트 간 요청 위조 = [CSRF](#CSRF (Cross Site Request Forgery) (CWE-352))
+**CWE-352**: 사이트 간 요청 위조 = [CSRF](#CSRF (Cross Site Request Forgery) (CWE-352))
 
-CWE-601: 신뢰할 수 없는 사이트로 URL 접속지를 변경 = [Open Redirect](#Open Redirect (CWE-601))
+**CWE-601**: 신뢰할 수 없는 사이트로 URL 접속지를 변경 = [Open Redirect](#Open Redirect (CWE-601))
 
 ## 위험한 자원 관리
 
@@ -474,11 +474,58 @@ MS에서는 보안 수준이 높은 소프트웨어를 개발하기 위해 다�
 
 
 
-| 1. 교육                                       | 2. 계획/분석                                                 | 3. 설계                                       | 4. 구현                                               | 5. 시험/검증                                                 | 6. 배포/운영                                | 7. 대응                                  |
-| --------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------- | ---------------------------------------- |
-| 소프트웨어 개발 보안교육<br />(Core Training) | 소프트웨어의 질과 버그 경계 정의<br />(Define Quality Gates / Bug bar) | 공격 영역 분석<br />(Attack surface analysis) | 도구 명세<br />(Specify Tool)                         | 동적/퍼징 테스팅<br />(Dynamic/Fuzz Testing)                 | 사고 대응 계획<br />(Reasponse Plan)        | 사고 대응 수행<br />(Response execution) |
-|                                               | 보안과 프라이버시 위협 분석<br />(Analyze Security and Privary Risk) | 위협 모델링<br />(Threat Modeling)            | 금지된 함수 사용 제한<br />(Enforce Banned Functions) | 공격 영역/위협 모델 검증<br />(Verify Threat Models/Attack Surface) | 최종 보안 검토<br />(Final Security review) |                                          |
-|                                               |                                                              |                                               | 정적 분석<br />(Static Analysis)                      |                                                              | 기록 보관 (Release Archive)                 |                                          |
+| 1. 교육                                           | 2. 계획/분석                                                 | 3. 설계                                       | 4. 구현                                               | 5. 시험/검증                                                 | 6. 배포/운영                                | 7. 대응                                  |
+| ------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------- | ---------------------------------------- |
+| **소프트웨어 개발 보안교육<br />(Core Training)** | 소프트웨어의 질과 버그 경계 정의<br />(Define Quality Gates / Bug bar) | 공격 영역 분석<br />(Attack surface analysis) | 도구 명세<br />(Specify Tool)                         | 동적/퍼징 테스팅<br />(Dynamic/Fuzz Testing)                 | 사고 대응 계획<br />(Reasponse Plan)        | 사고 대응 수행<br />(Response execution) |
+|                                                   | 보안과 프라이버시 위협 분석<br />(Analyze Security and Privary Risk) | **위협 모델링<br />(Threat Modeling)**        | 금지된 함수 사용 제한<br />(Enforce Banned Functions) | 공격 영역/위협 모델 검증<br />(Verify Threat Models/Attack Surface) | 최종 보안 검토<br />(Final Security review) |                                          |
+|                                                   |                                                              |                                               | **정적 분석<br />(Static Analysis)**                  |                                                              | 기록 보관 (Release Archive)                 |                                          |
+
+[MS-SDL 자세한 정보](https://www.microsoft.com/en-us/securityengineering/sdl)
+
+
+
+
+
+##### 위험 모델링 (Threat Modeling)
+
+* "어떤 위협이 있을까"에 집중해야 한다. "위협을 어떻게 처리해야 할까"는 목적에 맞지 않는다.
+
+* 위협을 파악하고, 어떻게 대응할 수 있는지 결정하여 방법을 제공하는 것.
+  (위협만 파악되면 대응법은 제공할 시스템이 되어있다는 말(?))
+
+* 모델링 단계
+
+  1. 팀소집 - 리더, 구성원 (10명 내외). 리더는 코딩능력은 부족해도 침해대응 능력이 탁월해야 한다.
+
+  2. 어플리케이션 분해 - 구조화된 다이어그램(도식화)으로 표현한다. DFD(데이터 흐름도) 사용을 권장한다.
+
+     * **두리뭉실한 문제점들을 그림화하여 시스템(문제점)을 잘 이해하도록 한다.**
+     * 서비스 하나의 프로세스로 보고 상호작용을 확인하기 위한 배경도를 그린다.
+     * 어플리케이션 분해 레벨에 따라 상세정보를 기술한다.
+     * 서술되는 세부사항 하나하나가 공격목표가 될 수 있어 위협이 될 수 있는 목표를 식별할 수 있다.
+
+  3. 위협 결정 - 위협을 식별하고 위협을 분류(STRIDE)한다. 위협트리 생성
+
+  4. 우선순위 결정 - 할당된 자원을 효율적으로  사용하기 위해서 결정한다.
+
+     - DREAD를 통해 위험도를 산정하고 산정한 위험도를 가지고 우선순위를 결정한다.
+
+  5. 대응기법 방법
+
+     1. 무시 (ignore)
+     2. 알림 (Alert) - 안전하지 않다.
+        - 사용자에게 알리는 것은 위협을 전가시키는 행위가 된다
+     3. 제거 (Remove)
+        - 위협이 되는 기능(서비스)을 없애버리게 된다. 
+     4. 수정 (Fix)
+        - 기능을 살리고 위협을 없앤다.
+        - 추가적인 비용(시간, 물질, 인력 등)이 들어갈 수 있다.
+
+  6. 대응할 기법 기술 선택
+
+     - 위험 결정에서 분류한 것을 토대로 기법과 기술을 선택한다.
+
+     
 
 
 
