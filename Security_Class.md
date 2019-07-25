@@ -865,16 +865,160 @@ root@kali:~#
 ##### 쿠키
 
 * 서버가 클라이언트에게 부여하는 요청과 요청 간에 관계를 이어주기 위한 흔적(?)이다
+
 * 설정 항목 (속성)
+
   * Name, Domain, Path
   * Expires: 유효기간, 지속시간(Maxage)
     * 파일형태로 디스크에 저장된다.
       (DiskCookie, 영속 쿠키 ↔ Memory Cookie, 비영속 쿠키)
   * Secure: 보안속성. HTTPS 요청으로만 전송되게 된다.
   * HttpOnly: Javascript로 직접 접근할 수 없음 (모든 브라우저가 지원하지 않음)
+
 * WebStorage: 모바일 환경에서 서비스를 원활하게 하도록 하기 위해...
   임시적으로 저장되었다가 전송되고 난 후 사라지는 Session Storage
   디스크에 저장되는 Disk Storage
+
+* **쿠키의 속성 값을 처리하는 변수로 사용하면 안된다.**
+
+  * 실습! - openeg/WebContent/hello.jsp, hello2.jsp 생성 아래와 같이 입력.
+
+  hello.jsp
+
+  ```jsp
+  <%@ page language="java" contentType="text/html; charset=UTF-8"
+      pageEncoding="UTF-8"%>
+  <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+  <html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Insert title here</title>
+  </head>
+  <body>
+  	<%	// scriptly: JSP에서 동적 처리하는 부분을 기술할 떄 사용한다.
+  	
+  		// 요청 파라미터 목록으로부터 이름이 name인 파라미터의 값을 문자열로 가져오는 것
+  		String pname = request.getParameter("name");
+  	if (pname == null || pname.equals("")) {
+  	%>
+  		<form method="post" action-"hello.jsp">
+  			<input type=""text" name="name" value="" autofocus>
+  			<input type="submit" value="안녕">
+  		</form>
+  	<%		
+  	} else {
+  		// 파라미터로 전달된 값을 쿠키에 저장 및 화면 출력
+  		Cookie c = new Cookie("cname", pname);
+  		c.setDomain("localhost");
+  		c.setPath("/openeg");
+  		response.addCookie(c);
+  		
+  		// 세션에 저장
+  		session.setAttribute("sname", pname);
+  		
+  		out.print(pname+"안녕!!!!!");
+  	}
+  	%>
+  	
+  	<a href="hello2.jsp">다시 안녕</a>
+  </body>
+  </html>
+  ```
+
+  
+
+  hello2.jsp
+
+  ```jsp
+  <%@ page language="java" contentType="text/html; charset=UTF-8"
+      pageEncoding="UTF-8"%>
+  <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+  <html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Insert title here</title>
+  </head>
+  <body>
+  	<%	
+  	String cname = "";
+  	String sname = "";
+  	
+  	Cookie[] cs = request.getCookies();
+  	
+  	for (int i=0; i<cs.length; i++) {
+  		if ("cname".equals(cs[i].getName())) {	
+  			cname = cs[i].getValue();
+  		}
+  	}
+  	
+  	sname = (String)session.getAttribute("sname");
+  	
+  	%>
+  	<hr>
+  	<h3>쿠키로부터 >>> <%=cname %> 다시 아뇽~!</h3>
+  	<hr>
+  	<h3>세션로부터 >>> <%=sname %> 다시 아뇽~!</h3>
+  	
+  </body>
+  </html>
+  ```
+
+  urlencoding.jsp
+
+  ```jsp
+  <%@ page language="java" contentType="text/html; charset=UTF-8"
+      pageEncoding="UTF-8"%>
+  <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+  <html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+  	<%
+  		String pcompany = request.getParameter("company");
+  		if (pcompany == null) {
+  			pcompany = "";
+  		}
+  		out.print("회사이름은 " + pcompany + "입니다.");
+  	%>
+  	<form>
+  		<input type="text" name="company" value=""/>
+  		<input type="submit"> 
+  	</form>
+  
+  	<a href="?company=<%=pcompany%>">링크로 접근</a>
+         <a href="?company=<%=java.net.URLEncoder.encode(pcompany, "UTF-8")%>">링크로 접근</a>
+  </body>
+  </html>
+  ```
+
+  htmlencoding.jsp
+
+  ```jsp
+  <%@ page language="java" contentType="text/html; charset=UTF-8"
+      pageEncoding="UTF-8"%>
+  <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+  <html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+  	<%
+  		String phtml = request.getParameter("html");
+  		if (phtml == null) {
+  			phtml = "";
+  		}
+  		out.print("입력한 내용은 " + phtml + "입니다.");
+  	%>
+  	<form>
+  		<input type="text" name="html" value=""/>
+  		<input type="submit"> 
+  	</form>
+  </body>
+  </html>
+  ```
+
+  
 
 
 
@@ -898,5 +1042,80 @@ root@kali:~#
 * 종류
   * ASCII
   * URL: 브라우저에서 서버로 정보를 전달하는데 사용.
-  * HTML
+  * HTML: 서버에서 브라우저로 내려보내는 문서를 안전하게 전달.
   * Base64
+
+
+
+
+
+### 정규식 (Regular Expression. Regex)
+
+* 특수문자를 메타 문자(Meta Character)라고 한다.
+
+* [정규표현식 연습 https://www.regexpal.com/](https://www.regexpal.com/)
+
+  * 휴대전화번호 찾기 정규식
+
+  ```rexel
+  [0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]
+  
+  \d\d\d-\d\d\d\d-\d\d\d\d
+  
+  \d{3}-\d{4}-\d{4}
+  
+  01[016789]-\d{4}-\d{4}
+  
+  01(?:0|1|[6-9])-\d{4}-\d{4}
+  
+  01(?:0|1|[6-9])-\d{3,4}-\d{4}
+  ```
+
+
+
+
+
+##  Injection (삽입)
+
+1. 입력값 검증 부재와 삽입
+   ![img](https://t1.daumcdn.net/cfile/tistory/99A408355B4CB7F83A)
+
+   - 규범화: 데이터를 손실 없이 가장 간단하면서 대등한 형태로 축소하는 과정
+   - 정규화: 데이터를 손실이 발생하여도 가장 간단하고 잘 알려진 형태로 변환하는 과정
+
+2. SQL Injection
+
+   - 외부 입력값을 쿼리 조작 문자열 포함 여부를 검증하지 않고 쿼리 작성 및 실행에 사용하는 경우
+     쿼리의 구조와 의미가 변경되어 실행되는 것
+     - 데이터베이스 또는 데이터에 대해 공격 ⇒ 권한 밖의 데이터를 조회, 수정, 삭제, 생성
+     - 서버에 대한 공격 ⇒ 데이터 베이스가 동작하는 서버의 제어권을 획득해서 원격지에서 해당 서버를 제어
+
+   ```
+   String ptext = request.getParameter("text");	// 검증 없이 SQL문을 사용
+   String query = "select * from data where keyword = '" + ptext + "'";
+   
+   // 
+   Statement stmt = connection.createStatement();
+   stmt.executeQuery(query);
+   ```
+
+   * 정상적인 요청
+     * search.jsp?text=abcd ⇒ select * from data where keyword = 'abcd'
+       비정상적인 요청 유형 ⇒ SQL Injection 공격 유형
+   * #1. 항상 참이 되는 입력 ⇒ 모든 내용이 반환 = 권한 밖의 데이터에 대해 접근이 가능
+     ⇒ search.jsp?text=abcd' or 'a' = 'a ⇒ select * from data where keyword = 'abcd' or 'a' = 'a'
+     ⇒ data 테이블에 모든 데이터를 조회해서 반환
+   * #2 오류를 유발하는 입력 ⇒ 추가 공격을 위한 정보 수입
+     ⇒ search.jsp?text=abcd'
+     ⇒ select * from data where keyword = 'abcd''
+     ⇒ 홑따움표의 개수가 일치하지 않아서 오류가 발생
+     ⇒ 오류 메시지에 대한 처리가 불완전하여 시스템 내부 정보가 사용자 화면에 출력 될 수 있음
+
+
+
+
+
+
+
+
+
