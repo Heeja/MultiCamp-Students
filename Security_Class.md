@@ -822,10 +822,81 @@ root@kali:~#
 
 #### 인가를 위한 접근 통제 기술
 
-| 접근통제 기술                                           | 설명                                                         |
-| ------------------------------------------------------- | ------------------------------------------------------------ |
-| 접근제어목록<br />(ACL: Access Control List)            | 사용자, 자원 중심의 목록을 작성하여 목록에 비교하여 접근 통제 |
-| 접근통제표<br />(ACM: Access Control Matrix)            | 자원 중심의 접근통제 표를 작성하여 접근 통제                 |
-| 강제적 접근통제<br />(MAC: Mandatory Access Control)    | 사용자와 자원에 적절한 보안등급(레이블)을 부여하여 통제      |
-| 역할기반 접근통제<br />(RBAC: Role Base Access Control) | 사용자에게 역할(Role)을 부여하고 각 역할 별로 권한을 부여.   |
+| 접근통제 기술                                                | 설명                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [접근제어목록]([https://ko.wikipedia.org/wiki/%EC%A0%91%EA%B7%BC_%EC%A0%9C%EC%96%B4_%EB%AA%A9%EB%A1%9D](https://ko.wikipedia.org/wiki/접근_제어_목록))<br />(ACL: Access Control List) | 사용자, 자원 중심의 목록을 작성하여 목록에 비교하여 접근 통제 |
+| 접근통제표<br />(ACM: Access Control Matrix)                 | 자원 중심의 접근통제 표를 작성하여 접근 통제                 |
+| 강제적 접근통제<br />(MAC: Mandatory Access Control)         | 사용자와 자원에 적절한 보안등급(레이블)을 부여하여 통제      |
+| 역할기반 접근통제<br />(RBAC: Role Base Access Control)      | 사용자에게 역할(Role)을 부여하고 각 역할 별로 권한을 부여.   |
 
+
+
+접근 통제표(ACM)
+
+![img](https://lh5.googleusercontent.com/WzmQpiRwn43KEAjrvn5Y86zA4uT7kEdnsvvk-gCcUmY1CPBkHtvXZitAkx_PY9ECGl_fHofcZPvbsajoPtHmkWLAiOlWOmnPNqgwI0p1dzgzs1KGHXhqUXZkmzxmEnqUAORNtLhS)
+
+
+
+
+
+#### 웹 인증 방식
+
+* 세션을 사용하지 않는 HTTP 인증
+  * Basic Authentication
+    * Base64 인코딩 방식사용.
+    * 스니핑을 통해 정보가 유출될 (매우) 위험이 높다.
+  * HTTP Digest Authentication
+    * 패스워드 없이 로그인 요청을 하고 요청마다 달라지는 랜덤한 수를 클라이언트에 전달하여 패스워드와 함께 MD5로 해시해서 서버에 다시 전달한다.
+  * HTTP NTLM Authentication
+  * Anonymous Authentication
+* 세션을 사용하는 인증
+  * Form Based Authentication
+    * Form태그를 이용해 인증정보를 서버에 전달하는 방식
+    * 데이터는 평문으로 전송되기  때문에 정보가 유출되지 않기 위해 SSL을 이용한 구간 암호화 통신 방식을 이용한다.
+
+##### SSL(Secure Socket Layer)
+
+
+
+### 세션과 쿠키
+
+
+
+##### 쿠키
+
+* 서버가 클라이언트에게 부여하는 요청과 요청 간에 관계를 이어주기 위한 흔적(?)이다
+* 설정 항목 (속성)
+  * Name, Domain, Path
+  * Expires: 유효기간, 지속시간(Maxage)
+    * 파일형태로 디스크에 저장된다.
+      (DiskCookie, 영속 쿠키 ↔ Memory Cookie, 비영속 쿠키)
+  * Secure: 보안속성. HTTPS 요청으로만 전송되게 된다.
+  * HttpOnly: Javascript로 직접 접근할 수 없음 (모든 브라우저가 지원하지 않음)
+* WebStorage: 모바일 환경에서 서비스를 원활하게 하도록 하기 위해...
+  임시적으로 저장되었다가 전송되고 난 후 사라지는 Session Storage
+  디스크에 저장되는 Disk Storage
+
+
+
+##### 세션
+
+* 웹 서버가 서버에 접근한 사용자를 식별하기 위한 방법
+* 유일한 세션 아이디를 생성하여 접속한 사용자에게 할당하고 기억한다.
+* 일정한 규칙없는, 비일관성 SessionID여야 한다. (SID 추측이 안되도록 한다.)
+* Session ID
+  * JSP: JSESSIONID
+  * ASP: ASPSESSIONID
+  * PHP: PHPSESSIONID
+
+
+
+#### 인코딩 스키마
+
+* 데이터가 잘 전달되도록 하기 위해 인코딩을 사용한다.
+  (내가 의도한대로 오해없이, 오역없이 데이터가 전달되도록 하기 위해서)
+* 일정한 규칙에 따라서 데이터를 변조하는 것
+* 종류
+  * ASCII
+  * URL: 브라우저에서 서버로 정보를 전달하는데 사용.
+  * HTML
+  * Base64
