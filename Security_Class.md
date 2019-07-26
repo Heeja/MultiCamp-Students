@@ -1102,14 +1102,101 @@ root@kali:~#
    * 정상적인 요청
      * search.jsp?text=abcd ⇒ select * from data where keyword = 'abcd'
        비정상적인 요청 유형 ⇒ SQL Injection 공격 유형
+     
    * #1. 항상 참이 되는 입력 ⇒ 모든 내용이 반환 = 권한 밖의 데이터에 대해 접근이 가능
      ⇒ search.jsp?text=abcd' or 'a' = 'a ⇒ select * from data where keyword = 'abcd' or 'a' = 'a'
      ⇒ data 테이블에 모든 데이터를 조회해서 반환
+     
    * #2 오류를 유발하는 입력 ⇒ 추가 공격을 위한 정보 수입
      ⇒ search.jsp?text=abcd'
      ⇒ select * from data where keyword = 'abcd''
      ⇒ 홑따움표의 개수가 일치하지 않아서 오류가 발생
      ⇒ 오류 메시지에 대한 처리가 불완전하여 시스템 내부 정보가 사용자 화면에 출력 될 수 있음
+     
+   * LAB@WinXP > Paros 실행 후 IE 브라우저로 WebGoat 사이트로 접속 ⇒ http://192.168.49.1:8080/WebGoat (webgoat / webgoat) > Injection Flaws > String SQL Injection 메뉴로 이동
+     (사용자 계좌(계정)의 유효성을 체크해 주는 서비스)
+     ![img](https://lh6.googleusercontent.com/8edG_W5s2q74ekLOfdlJMYsyPYh75m7KWn3R-eq93x2AJlfRQRqPHUXF5gT8kmjiLrbbf276c0vI7qkI1M6d_M-RgtZbm9htQDR7rlVjAJsI9GlqZLOJtu1Cd_T6LVG21P-T9wsh)
+   
+     
+   
+   * 선택한 지역의 날씨 정보를 출력해주는 서비스.
+     WebGoat > Injection Flaws > Numeric SQL Inejction
+   
+     ![img](https://lh4.googleusercontent.com/YvLPx-EdsSvhNPLrT2d1XjhokTG-AlFO0RM9QVTqY2uGBoTKi44ed06lm6kQrdtudr3lSwob2hxIzUM55zvbu_ebcXBNoZ8PwZbuyLK9NecsX4AaDS_ln_h4TdBgItNwwP4QgeSP)
+   
+     * Q. 모든 지역의 날씨 정보가 출력되도록 하시오.
+   
+     * 과정
+       [화면]지역을 선택: Seattle → station 파라미터의 값 102으로 지정
+       [전달].../search.jsp?satation=102
+       [처리]select * from weather where satation = 102
+   
+     * 정답1.
+       URL 주소의 요청 파라미터를 수정해서 직접 호출하는 방법http://192.168.49.1:8080/WebGoat/attack?Screen=75&menu=1100&station=102 or 1=1
+   
+     * 정답2.
+       Proxy를 이용해서 요청 파라미터를 수정해서 호출하는 방법station=102 or 1=1&SUBMIT=Go%21
+       ![img](https://lh5.googleusercontent.com/JQHUMD9_uKFaArd2yNkHYgwbM-Z98IaJiU3EYEmT1ob5JO1pmdvZkGSaXAFDlj1o_FVlvgpvhMHTYmCHhJyci-B-6QkfS7n8Q_psXnuon8cJpO4P1QD4TYXrMre3LeKFvQLbEMvB)
+   
+       #2 오류를 유발하는 입력
+       ⇒ 추가 공격을 위한 정보 수입
+       ⇒ search.jsp?text=abcd'⇒ select * from data where keyword = 'abcd''
+       → 홑따움표의 개수가 일치하지 않아서 오류가 발생
+       → 오류 메시지에 대한 처리가 불완전하여 시스템 내부 정보가 사용자 화면에 출력 될 수 있음
+   
+     * 정답3. 브라우저의 개발자 도구를 이용해서 파라미터의 값을 변경하여 서버로 전달
+   
+   * Stage2.
+     ![img](https://lh5.googleusercontent.com/JQHUMD9_uKFaArd2yNkHYgwbM-Z98IaJiU3EYEmT1ob5JO1pmdvZkGSaXAFDlj1o_FVlvgpvhMHTYmCHhJyci-B-6QkfS7n8Q_psXnuon8cJpO4P1QD4TYXrMre3LeKFvQLbEMvB)
+     WebGoat > Injection Flaws > LAB: SQL Injection > Stage 1. String SQL Injection ![img](https://lh5.googleusercontent.com/-dsoFpWODlIQSPcr4_Vv8R678hbWxMB9ka9d1A0DyBsC-f06YaLdiaIJ-vGWeNSTNh3BHrHl3AUYVaXlkAlhXQLEveeV6HywM47bxeoj8vskAEZcTdXb2LLY9htFNpqLU8zNiIci)문제: Neville 사용자로 로그인 하시오.
+   
+     [화면]사용자 : Neville ⇒ employee_id 파라미터의 값으로 112가 선택패스워드 : a' or 'a' = 'a
+   
+     [전달] .../login.jsp?userid=112&password=a' or 'a' = 'a
+     [처리] select * from users where userid = 112 and password = 'a' or 'a' = 'a'
+     → 조회 결과가 있으면 → 로그인 성공
+     → 조회 결과가 없으면 → 로그인 실패
+     브라우저의 개발자 도구를 이용해서 클라이언트의 입력 값 제약 조건을 해제 후 공격 문자열을 입력, 전달한다.![img](https://lh5.googleusercontent.com/K-P0VWiGLX53U75I5rx8bqtr5uNL-cSQkWRlQb2Dpwfs5ucIMWGHbcIITvbXvQcEbpVa18H0KVpcjiAObUi5y3_jagdILsk-G41jL8pXGdnuNrOPOuJ4eSUAw_CySCNMU2nPYvY6)
+     Proxy 도구를 이용해서 서버로 전달되는 중간에 값을 변경해서 전달하는 방법이 있다.![img](https://lh4.googleusercontent.com/scpuMyF2KObAhLl6HEDBXJ-PaQHIIQ7EQ6mmvosKI1OzctDfecOUSqjpCdNKqeTacv36l4izZNh2hJeUNx2GZJt1FHBv9j0sbSg7h_VdQ7UTjX_ZxQw-F65RUvrt3eiJNRjl7Z_g)
+   
+     
+   
+     Parameterized Query #1
+     문제 : State 1에서 사용된 소스의 문제점을 확인 후 안전한 방법으로 소스 코드를 수정 하시오
+   
+     ```java
+     // **진단 결과**
+     			// 외부 입력값 userID와 password를 검증하지 않고, SQL문 생성 및 실행에 사용하고 있다. => SQL Injection 취약!
+     			// 안전한 코드로 변경하는 방법
+     			// SQL문 쿼리문의 구조를 정의하고, 정의된 형태로만 실행되는 것을 보장 = 파라미터화된 쿼리 실행 = 구조화된 쿼리 실행
+     			// = PreparedStatement(미리 정의된) 객체를 이용해서 쿼리 실행
+     //			String query = "SELECT * FROM employee WHERE userid = " + userId + " and password = '" + password + "'";
+     //			// System.out.println("Query:" + query);
+     			
+     			// ###1 쿼리문의 구졸르 정의
+     			// 변수(입력값이 들어가는) 부분을 물음표(?)로 마킹한다.
+     			// 유의사항: 해당 컬럼의 데이터 타입을 고려하지 않는다.
+     				String query = "SELECT * FROM employee WHERE userid = ? and password = ?";
+     
+     				try
+     	 			{
+     					// ###2 Statement 객체를 PreparedStatement 객체로 변경.
+     					// PreparedStatement 객체를 생성.
+     					// prepareStatement() 메소드를 이용해서 생성하고, 파라미터로 궈리문의 구조를 전달한다.
+     					
+     					java.sql.PreparedStatement answer_statement = WebSession.getConnection(s)
+     							.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+     					
+     					// ###3 변수에 값으 ㄹ바인딩 후 쿼리를 실행한다.
+     					// 해당 컬럼의 데이터 타입을 고려해서 바인딩 함수를 사용한다.
+     					answer_statement.setInt(1, Integer.parseInt(userId));	// 문자를 숫자로 캐스킹 해준다.
+     					answer_statement.setString(2, password);
+     					// answer_statement를 생성할 때 Query문을 정의해줬기 때문에 아래에 query는 이제 필요없다.
+     					// ResultSet answer_results = answer_statement.executeQuery(query);
+     					ResultSet answer_results = answer_statement.executeQuery();
+     ```
+   
+     
 
 
 
