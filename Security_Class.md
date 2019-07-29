@@ -1425,7 +1425,37 @@ Parameterized Query #1
     (= White List 방식의 입력 값 제한)
   * 추가 명령에 실행에 사용되는 '**&**', '**|**', '**;**' 등의 문자를 입력 값 필터링 한다.
 
+* 실습
 
+  * WebGoat > Injection Flaws > Command Injection 도움말 제공 서비스
 
+  * [화면] CSRF.help 파일을 선택 후 View 버튼을 클릭
 
+  * [서버]
+    exec("cmd.exe /c type \\**"** C:\FullstackLAB\\...\English\CSRF.html\\**"**")
 
+    * Windows (요즘엔 Linux에서도) 폴더/파일 이름에 공백 문자를 포함하기 때문에 **""**으로 처리한다.
+
+  * 파일이 아니라 왜 html로 받게 되는가?
+
+    * Web에서는 파일을 html로 감싼다.
+
+  * [화면]
+    CSRF.help" & ipconfig 파일을 선택 후 View 버튼을 클릭
+
+  * [서버]
+    exec("cmd.exe /c type \\"C:\FullstackLAB\...\WebGoat\lesson_plans\English\\**CSRF.html" & ipconfig**\\"")
+
+  * 개발자 도구를 이용해서 아래와 같이 값 변경
+
+    ```html
+    <option value="CSRF.help&quot; &amp;ipconfig">CSRF.help</option>
+    ```
+
+    * html Form 태그에서 입력 값을 기본적으로 URL Encording 처리를 한다.
+
+      ```html
+      <option >CSRF.help" & ipconfig</option>
+      ```
+
+      
