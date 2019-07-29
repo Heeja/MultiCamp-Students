@@ -1462,3 +1462,110 @@ Parameterized Query #1
 
 
 
+* Eclipse > testController.java > open
+
+  ```java
+  @RequestMapping(value = "/test/command_test.do", method = RequestMethod.POST)
+  	@ResponseBody
+  	public String testCommandInjection(HttpServletRequest request, HttpSession session) {
+  		StringBuffer buffer = new StringBuffer();
+  		
+  		// 진단결과: 외부 입력값 dat를 검증, 제한하지 않고 운영체제 명령어 실행부분에 사용하고 있다.
+  		// 		(= 운영체제 명령어 삽입 취약점에 노출되어 있다.)
+  		
+  		// 대응방법: 1)사용가능한 명령어를 미리 정의하고, 정의된 범위 내에서 명령어를 사용할 수 있도록 수정한다.
+  		// 		  2) 서버로 전달되는 파라미터를 명령어 실행에 직접 사용하지 않도록 수정한다.
+        
+        // #1 사용 가능한 명령어를 미리 정의
+  		String[] allowedCommands = { "type", "dir" };
+  		
+  		// #2 사용자 화면에서 전달되는 내용이 
+  		//    명령어가 아닌 코드가 전달되도록 수정
+  		//    type = 0 
+  		//    dir  = 1 => test.jsp 에서 수정
+  		
+  		String data = request.getParameter("data");
+  		
+  		// #3 사용자 화면에서 넘어 온 코드를 실제 사용할 명령어로 맵핑
+        try {
+  			data = allowedCommands[Integer.parseInt(data)];
+  		} catch (Exception e) {
+           // 오류의 유형
+           // 1. 숫자가 아닌 문자가 전달되는 경우 ⇒ 파싱 오류
+           // 2. 0, 1이 안니 숫자가 전달되는 경우 ⇒ 배열 인덱스 오류
+           return "비정상적인 오류입니다.";
+        }
+        
+        
+        if (data != null && data.equals("type")) {
+  			// data 변수는 "type c:\...\files\\file1.txt" 형태의 값을 가지게 된다.
+  			data = data + " " + request.getSession().getServletContext().getRealPath("/") + "files\\file1.txt";
+  		}
+  
+  		Process process;
+  		// cmd 에서 set명령어의 os 값을 확인한다.
+  		String osName = System.getProperty("os.name");
+  		// osName 확인
+  		System.out.println("osName: "+ osName);
+  		
+  		String[] cmd;
+  
+  		if (osName.toLowerCase().startsWith("window")) {
+  			cmd = new String[] { "cmd.exe", "/c", data };
+  			for (String s : cmd)
+  				System.out.print(s + " ");
+  		} else {
+  			cmd = new String[] { "/bin/sh", data };
+  		}
+  		try {
+  			process = Runtime.getRuntime().exec(cmd);
+  			InputStream in = process.getInputStream();
+  			Scanner s = new Scanner(in);
+  			buffer.append("실행결과: <br/>");
+  			while (s.hasNextLine() == true) {
+  				buffer.append(s.nextLine() + "<br/>");
+  			}
+  		} catch (IOException e) {
+  			buffer.append("실행오류발생");
+  			e.printStackTrace();
+  		}
+  		return buffer.toString();
+  	}
+  ```
+
+* test.jsp
+
+  ```html
+  <form action="command_test.do" id="form5">
+  								<pre>
+          (4) Command 인젝션  <br />
+          <%--
+          	내부 처리에 사용되는 명령어(type, dir)가 
+          	사용자 화면에서 서버로 직접 전달되는 구조를 가지고 있음
+          	-> 공격자가 내부 처리를 유추할 수 있다
+          	=> 코드화한 값을 서버로 전달하도록 수정
+          	   type = 0
+          	   dir  = 1
+           --%>
+              <select name="data" id="data5">
+                <%-- 
+                <option value="type">--- show File1.txt ---</option>
+                <option value="dir">--- show Dir ---</option>
+                --%>
+                <option value="0">--- show File1.txt ---</option>
+                <option value="1">--- show Dir ---</option>
+          </select> <input type="button" id="button5" value="실행">
+         </pre>
+  </form>
+  ```
+
+  
+
+
+
+
+
+
+
+
+
