@@ -1328,11 +1328,104 @@ Parameterized Query #1
 ### ORM FrameWork
 
 * **객체 관계 매핑**(Object-relational mapping; ORM)은 데이터베이스와 객체 지향 프로그래밍 언어 간의 호환되지 않는 데이터를 변환하는 프로그래밍 기법이다. 객체 지향 언어에서 사용할 수 있는 "가상" 객체 데이터베이스를 구축하는 방법이다. 객체 관계 매핑을 가능하게 하는 상용 또는 무료 소프트웨어 패키지들이 있고, 경우에 따라서는 독자적으로 개발하기도 한다.
+
 * XML(쿼리맵)
+
 * 종류: iBatis, myBatis, Hibernate
+
 * #은 변수처럼, $는 단순 문자결합
+
+* 실습
+
+  * #1 openeg 로그인 페이지a' 를 입력했을 때 나오는 오류 메시지 ⇒ 로그인 처리를 수행하는 쿼리맵 파일과 쿼리맵 ID를 확인.
+
+    * Error Message
+      --- The error occurred in **kr/co/openeg/lab/login/dao/login.xml**.  --- The error occurred while applying a parameter map.  --- Check the **login.loginCheck2**-InlineParameterMap.  --- Check the statement (query failed).
+    * login.xml
+
+    ```xml
+    <select id="loginCheck2" parameterClass="LoginModel"
+    		resultClass="LoginModel">
+    		select
+    		idx,
+    		userId,
+    		userPw,
+    		userName,
+    		joinDate
+    		from board_member
+    		<!-- 외부에서 입력되는 userId, userPw가 '$'기호를 이용해서 바인딩 되고 있으므로, 입력값 조작을 통한 SQL 
+    			Injection 공격이 가능하다. 대응방법: 외부입력 값을 쿼리맵 변수에 바인딩할 떄 반드시 '#'기호를 이용한다. where userId 
+    			= '$userId$' and userPw = '$userPw$' -->
+    		where userId = #userId# and userPw = #userPw#
+    	</select>
+    ```
+
+    
 
 
 
 ### PreparedStatement
+
+
+
+### 운영체제 명령어 삽입 (Command Injection)
+
+* 운영체제 명령어 실행 부분이 존재하는 경우외부 입력값을 검증, 제한 없이
+  운영체제 명령어 실행 부분에 운영체제 명령어 또는 명령어의 일부로
+  사용되는 경우 발생
+
+* 외부 입력 값을 **검증 없이** 운영체제 명령어로 사용하는 경우
+
+  ```
+  String input = equest.getParameter("cmd");
+  Runtime.getRuntime().exec(input);
+  ```
+
+  * 입력 값이 명령어로 사용됨
+  * 정상 입력: .../doSomething.jsp?cmd=ls
+  * 비정상 입력: .../doSomething.jsp?**cmd=ifconfig**
+    ⇒ 의도하지 않은 명령어 실행이 가능해 지면서 서버의 **제어권이 탈취** 될 수 있다.
+
+* 외부 입력 값을 검증 없이 운영체제 명령어의 일부로 사용하는 경우
+
+  ```
+  String input = equest.getParameter("data");
+  Runtime.getRuntime().exec("cmd.exe /c type c:/data/" + input);
+  ```
+
+  * 입력 값이 명령어 실행에 필요한 파라미터로 사용됨
+  * 정상 입력: .../doSomething.jsp?data=help.txt
+    ⇒ c:\data\help.txt 내용 출력
+  * 비정상 입력: .../doSomething.jsp?data=**help.txt &(%26) ipconfig**
+    ⇒ help.txt 내용 출력 및 서버의 ip정보도 함께 출력 된다.
+    ⇒ 의도치 않은 **추가 명령어 실행**이 가능하여 서버의 제어권이 탈취 될 수 있다.
+
+* 코드 상에 'exec'라는 문구가 있으면 확인을 해보아야 한다.
+
+* **제한 방법**
+
+  * **White List**: 허용 목록
+  * **Black List**: 제한 목록
+  * 입력 값 유형 a, b, c, 중 a는 안전, b, c는 안전하지 않다.
+    * 허용 목록: [a]
+        입력 a, b, c ⇒ 출력 a
+        입력 a, b, c, x, y ⇒ 출력 a
+    * 제한 목록: [b, c]
+        입력 a, b, c ⇒ 출력 a 
+        입력 a, b, c, x, y ⇒ 출력 a, x, y
+  * 검증되지 않은 새로운 유형에 대해서 방어할 수 없기 때문에 White List 방식을 추천한다.
+  * **Black List 사용하는 경우**: 모집 합의 경우가 큰 경우
+    Ex. 공항에서 입국하는 사람을 통제할 경우.. 전세계 사람을 일일이 허용할 수 없으니 Black List 방식을 사용한다.
+  * IT에서는 입력 값을 제한할 수 있기 때문에 White List 방식을 주로 사용한다.
+
+* **방어 기법** (원인 제거!)
+
+  * 운영체제 명령어 **실행 구문의 필요성** 여부 및 대체 가능 여부를 판정한다.
+  * 사용할 명령어를 미리 정의하고, 정의된 명령어만 사용되도록 한다. 
+    (= White List 방식의 입력 값 제한)
+  * 추가 명령에 실행에 사용되는 '**&**', '**|**', '**;**' 등의 문자를 입력 값 필터링 한다.
+
+
+
+
 
