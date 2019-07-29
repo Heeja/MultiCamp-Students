@@ -1571,9 +1571,84 @@ Parameterized Query #1
 
 
 
+### XPath Injection
+
+* XML문서에 사용되는 표현식
+
+* XML문서에서 특정 입력 값을 찾기 위해서 XPath를 사용한다.
+
+* 입력 값을 검증하지 않고 사용하거나, XQuery 구문을 사용하여 예방 할 수 있다.
+
+* 실습
+
+  * TestUtil.java open
+
+  * 아래와 같이 코드 수정
+
+    ```java
+    // 입력 값 필터링 코드
+    	// 안전한 방법은 아니지만 일부 문자를 필터링 할 수 있다.
+    	public String xpathFilter(String input) {
+    		return input.replaceAll("[',\\[]", "");	// ', [ 를 제거하는 코드
+    	}
+    
+    	public String readXML(String name) {
+    
+    		StringBuffer buffer = new StringBuffer();
+    
+    		try {
+    			InputStream is = this.getClass().getClassLoader().getResourceAsStream("config/address.xml");
+    			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+    			DocumentBuilder builder = builderFactory.newDocumentBuilder();
+    			Document xmlDocument = builder.parse(is);
+    			XPath xPath = XPathFactory.newInstance().newXPath();
+    
+    			System.out.println("ccard 출력");
+    			String expression = "/addresses/address[@name='" + xpathFilter(name) + "']/ccard";
+    
+    			NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODESET);
+    			for (int i = 0; i < nodeList.getLength(); i++) {
+    				buffer.append("CCARD[ " + i + " ]  " + nodeList.item(i).getTextContent() + "<br/>");
+    			}
+    ```
+
+    
+
+### LDAP Injection
+
+* 취약점 제거 기법
+  * LDAP 쿼리 조작할 수 있는 문자열을 제거.
+  * 사용자 입력에 대해 엄격하게 유효성을 검증한다.
 
 
 
+### SOAP Injection
 
 
 
+## 세션 및 인증 관리 취약
+
+* 인증
+  * 세션을 사용하는 인증
+  * 인증 시도 횟수를 제한해야 한다.
+    (제안 해제하는 방법도 안전해야 한다.)
+  * 인증 정보를 생성 및 관리가 안전해야 한다.
+    * 복잡도
+    * 비규칙성
+    * 사전 등록되지 않은
+    * 개인정보 관련
+
+* 인가
+  * 화면
+  * 기능
+  * 데이터
+* 세션
+  * 쿠키를 이용해서 서버가 사용자의 접속을 이어주기 위한 기능 (= SessionID)
+  * 세션을 구분하는 SessionID를 추측할 수 없도록 만든다
+  * SID 스니핑을 통해 탈취 당할 수 있다.
+    * 보안 통신(HTTPS)를 통해서 스니핑을 완화한다.
+  * 서버에서 내려받은 클라이언트를 통해서 클라이언트에 저장된 SID를 탈취 당할 수 있다. (XSS을 통해서 탈취)
+    * 시큐어코딩 기법을 통해서 공격자의 XSS 기법을 하지 못하도록 완화한다.
+  * SessionID 고정
+    * 인증 전에서 인증 후. 동일한 세션이 유지되는 것
+      (Login ⇒ Logout 동일한 SID)
