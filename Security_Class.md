@@ -1722,7 +1722,186 @@ Parameterized Query #1
   * 인증 시도 횟수 제한
   
     * 추가 값 입력 요구하여 무작위 대입 공격이 불가능 하도록 한다.
+  
     * 계정을 잠금시켜 추가 인증을 통해 해제 하도록 한다.
+  
+    * LoginHistory.java
+  
+      ```java
+      package kr.co.openeg.lab.login.model;
+      
+      public class LoginHistory {
+      	private int idx;
+      	private String userId;
+      	private int retry;	
+      	private int  loginFailedCount; // 로그인 실패 회수를 저장 
+      	private long lastFailedLogin;
+      	private long lastSucessedLogin;
+      	private String clientIP;
+      	private String sessionID;
+      	
+      	public int getLoginFailedCount() {
+      		return loginFailedCount;
+      	}
+      	public void setLoginFailedCount(int loginFailedCount) {
+      		this.loginFailedCount = loginFailedCount;
+      	}
+      	public int getIdx() {
+      		return this.idx;
+      	}
+      	public void setIdx(int idx) {
+      		this.idx = idx;
+      	}
+      	public String getUserId() {
+      		return userId;
+      	}
+      	public void setUserId(String userId) {
+      		this.userId = userId;
+      	}
+      	public int getRetry() {
+      		return retry;
+      	}
+      	public void setRetry(int retry) {
+      		this.retry = retry;
+      	}
+      	public long getLastFailedLogin() {
+      		return lastFailedLogin;
+      	}
+      	public void setLastFailedLogin(long lastFailedLogin) {
+      		this.lastFailedLogin = lastFailedLogin;
+      	}
+      	public long getLastSucessedLogin() {
+      		return lastSucessedLogin;
+      	}
+      	public void setLastSucessedLogin(long lastSucessedLogin) {
+      		this.lastSucessedLogin = lastSucessedLogin;
+      	}
+      	public String getClientIP() {
+      		return clientIP;
+      	}
+      	public void setClientIP(String clientIP) {
+      		this.clientIP = clientIP;
+      	}
+      	public String getSessionID() {
+      		return sessionID;
+      	}
+      	public void setSessionID(String sessionID) {
+      		this.sessionID = sessionID;
+      	}	
+      }
+      ```
+  
+      
+  
+    * LoginController.java
+  
+      ```java
+      package kr.co.openeg.lab.login.controller;
+      
+      import java.util.Date;
+      
+      import javax.annotation.Resource;
+      import javax.servlet.http.HttpServletRequest;
+      import javax.servlet.http.HttpSession;
+      
+      import kr.co.openeg.lab.login.model.LoginHistory;
+      import kr.co.openeg.lab.login.model.LoginSessionModel;
+      import kr.co.openeg.lab.login.service.LoginService;
+      import kr.co.openeg.lab.login.service.LoginValidator;
+      
+      import org.springframework.stereotype.Controller;
+      import org.springframework.validation.BindingResult;
+      import org.springframework.web.bind.annotation.ModelAttribute;
+      import org.springframework.web.bind.annotation.RequestMapping;
+      import org.springframework.web.bind.annotation.RequestMethod;
+      import org.springframework.web.servlet.ModelAndView;
+      
+      @Controller
+      public class LoginController {
+      
+      	@Resource(name = "loginService")
+      	private LoginService service;
+      
+      	@RequestMapping("/login.do")
+      	public String login() {
+      		return "/board/login";
+      	}
+      	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
+      	public ModelAndView loginProc(@ModelAttribute("LoginModel") LoginSessionModel loginModel, BindingResult result, HttpSession session, HttpServletRequest request) {
+      		ModelAndView mav = new ModelAndView();
+      
+      		// 인증 시도 회수 제한을 구현
+      		// 현재 세션에서 LoginVO라는 이름의 객체(LoginHistory)를 가져옮
+      		LoginHistory loginVO = (LoginHistory)session.getAttribute("LoginVO");
+      		if (loginVO == null) {
+      			System.out.println("#1" + session.getId());
+      			loginVO = new LoginHistory();
+      		}
+      		// form validation
+      		new LoginValidator().validate(loginModel, result);
+      		if (result.hasErrors()) {
+      			mav.setViewName("/board/login");
+      			return mav;
+      		}
+      		String userId = loginModel.getUserId();
+      		String userPw = loginModel.getUserPw();
+      		// 로그인 실패 회수를 체크해서 5회 이상이면 로그인 시도를 차단
+      		long now = new Date().getTime();
+      		long lastFailedLogin = loginVO.getLastFailedLogin();
+      		int tryCount = loginVO.getLoginFailedCount();
+      		tryCount ++;
+      		if (tryCount >= 5) {
+      			// 마지막으로 로그인에 실패한 후 10초가 경과하면 로그인 차단을 해제
+      			if ((now - lastFailedLogin) > 10000) {
+      				tryCount = 1;
+      			} else {
+      				loginVO.setLoginFailedCount(tryCount);
+      				loginVO.setLastFailedLogin(now);
+      				session.setAttribute("LoginVO", loginVO);
+      				
+      				mav.addObject("errCode", 10);
+      				mav.setViewName("/board/login");
+      				return mav;
+      			}
+      		}
+      		LoginSessionModel loginCheckResult = service.checkUserId(userId, userPw);
+      
+      		// 로그인 실패
+      		if (loginCheckResult == null) { 
+      			// 로그인 실패 회수를 증가시킨 후 인증시도이력 정보를 세션에 저장
+      			loginVO.setLoginFailedCount(tryCount);
+      			// 마지막 로그인 실패 시간을 저장
+      			loginVO.setLastFailedLogin(now);
+      			session.setAttribute("LoginVO", loginVO);
+      			
+      			mav.addObject("userId", userId);
+      			mav.addObject("errCode", 1);
+      			mav.setViewName("/board/login");
+      			return mav;
+      		} 
+      		// 로그인 성공
+      		else { 
+      			// 기존 세션을 지우고, 새로운 세션을 생성 ⇐ 세션 고정 공격을 방어하기 위한 방법
+      			System.out.println("Current Session ID : " + session.getId());
+      			session.invalidate();
+      			session = request.getSession(true);
+      			System.out.println("New Seesion ID : " + session.getId());
+      			
+      			session.setAttribute("userId", userId);
+      			session.setAttribute("userName", loginCheckResult.getUserName());
+      			mav.setViewName("redirect:/board/list.do");
+      			return mav;
+      		}
+      	}
+      	@RequestMapping("/logout.do")
+      	public String logout(HttpSession session) {
+      		session.invalidate();
+      		return "redirect:login.do";
+      	}
+      }
+      ```
+  
+      
   
   * 다중로그인 정책
   
@@ -1777,9 +1956,70 @@ Parameterized Query #1
 
   ![img](https://lh4.googleusercontent.com/YZ_H9A77dNFQG3720wiMqqAWiBjLSbPFYYJ8jMc6-dgh9PWysuAe9pEL6lw8FTMYtOyyT7Di7VDAwgJPS1Tf6yZb1u_V2WkGggZYQc_Z69FS_HAGuu9Zp6OYN_lwp7HoBeaYDdK8)![img](https://lh5.googleusercontent.com/ZU08Ttyyq_eVyrGTAtI0N_w_wHsCHQiLH7Z-zR2S-qCgiCWCwSax6TeVyiP9t7Leb0sSiYfsScyceF3DTVrJeYuDLtxpcWSXipVekfkHr9tyZzcdwR_hyHx8SzRFsUblMxBs_ps3)
 
+
+
+##  크로스 사이트 스크립팅 (Cross-Site Scriptting, XSS)
+
+* **공격자가 전달한 스크립트 코드**가 사용자 브라우저를 통해서 실행되는 것
+  * 타겟 PC에 저장된 정보를 탈취
+  * 가짜 페이지를 만들어서 타겟으로 하여금 추가 입력을 유도하고, 정보를 탈취한다.
+  * 타겟 PC를 좀비화하여 원격으로 타겟 PC를 조작하게 된다. (BeEF)
+* 공격자가 스크립트 코드를 전달하는 방식에 따라 유형이 달라진다.
+* XSS Cheat Sheet
+  https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet
+* Script 실행 방법
+  * html 내부 Script 코드를 통한 실행
+  * Script src를 통한 실행
+  * img src onerror 이벤트를 통해 Script 실행
+  * css의 express, url 함수 안에서 Script 실행
+* **Lucy xss filter** - Naver에서 만든 Script 실행 방지 필터
+
+### Reflective(반사) XSS
+
+* 취약한 웹 서버를 경유해서 타겟에 전달되는 방식
+
+* 입력 값이 입·출력 검증 없이 다음 화면에 사용되는 경우 발생.
+
+* ex. 입력 값을 출력으로 보내다.
+  <%=request.getParameter("input")%>
+  <% out.print(request.getParameter("input")); %>
+
+  정상 입출력: .../do.jsp?input=홍길동 ⇒ 홍길동
+  비정상 입출력: .../do.jsp?input=\<script>alert(document.cookie)\</script> ⇒ 해당 브라우저의 쿠키 값 출력
+
   
 
-##### 회사에서 바로 통하는 엑셀 ebook
+### Stored(저장) XSS
+
+* 취약한 웹 서버에 스크립트 코드를 저장하여 지속적으로 타겟 브라우저로 내려가서 실행 되는 것.
+* 지속적인 공격이 가능하다. Persistence
+
+
+
+###  DOM Based XSS
+
+* 개발자가 작성한 스크립트 코드의 취약점을 이용한 공격
+
+* 실행 가능한 스크립트 코드가 있는지 확인한다.
+
+  * 실행해야 한다면 검증한 후 적용
+  * 굳이 실행할 필요가 없다면 다른 방법으로 서비스 한다.
+
+  
+
+### CSP
+
+* WEB은 기본적으로 **교차 자원 공유(Cross Resource Sharing)**가 가능한데, XHR을 사용하는 비동기 통신에서는 **동일 기원 정책(Same Origin Policy, SOP)**의 특성을 갖는다.
+  SOP 특성으로 인해서 ??이 막힌다.
+* **교차 기원 자원 공유 (Cross Origin Resource Sharing, CORS)** - SOP를 완화하기 위한 정책
+* https://developer.mozilla.org/ko/docs/Web/HTTP/CSP
+  https://content-security-policy.com/browser-test/
+
+
+
+
+
+###### 회사에서 바로 통하는 엑셀 ebook
 
 http://hanbit.smilecdn.com/ebook/ebook_excel.pdf
 
