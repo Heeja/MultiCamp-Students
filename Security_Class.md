@@ -1650,6 +1650,8 @@ Parameterized Query #1
   
     * 클라이언트와 서버에 동일하게 적용되었는지 확인해야 한다.
   
+    * LoginValidator.java
+  
       ```java
       Public class LoginValidator implements Validator {
       @Override
@@ -1675,8 +1677,46 @@ Parameterized Query #1
       memberModel.getUserName().trim().isEmpty()){
       errors.rejectValue("userName", "required");
       }
+         
+      		// 패스워드 복잡도 체크
+      		if (!verify(loginModel.getUserPw())) {
+      			errors.rejectValue("userPw", "password-weaked");
+      		}
+      
+      	}
+      	
+      	public boolean verify(String pw) {
+      		String pwPolicy = "(?=.*[a-zA-Z])(?=.*[!@#$%^*+=\\-])(?=.*[0-9]).{8,20}";
+      		Pattern pattern = Pattern.compile(pwPolicy);
+      		Matcher matcher = pattern.matcher(pw);
+      		return matcher.matches();
+      	}
       }
-      }
+      ```
+  
+    * login.jsp
+  
+      ```jsp
+      // /openeg/WebContent/WEB-INF/board/login.jsp
+      	// 클라이언트 사이트에서 패스워드 복잡도 체크 로직 (244페이지)
+      	function isValidFormPassword(pw) {
+      		// 패스워드 길이 체크
+      		if (pw.length < 8 || pw.length > 20) {
+      			alert("비밀번호는 8~20 자리로 입력해 주세요.");
+      			return false;
+      		}
+      		// 복잡도 체크
+      		var check = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=\-])(?=.*[0-9]).{8,20}$/;
+      		if (!check.test(pw)) {
+      			alert("비밀번호는 문자, 숫자, 특수문자의 조합으로 입력해 주세요.");
+      			return false;
+      		}
+      		return true;
+      	}
+      	function check() {
+      		var pw = document.getElementById("userPw").value;
+      		return isValidFormPassword(pw);
+      	}
       ```
   
       
@@ -1696,3 +1736,4 @@ Parameterized Query #1
     * 인증 전에서 인증 후. 동일한 세션이 유지되는 것
       (Login ⇒ Logout 동일한 SID)
   * URL White에 사용되는 파라미터에서 SID를 추출할 수 있다.
+
