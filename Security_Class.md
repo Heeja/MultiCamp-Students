@@ -873,7 +873,7 @@ root@kali:~#
     * 파일형태로 디스크에 저장된다.
       (DiskCookie, 영속 쿠키 ↔ Memory Cookie, 비영속 쿠키)
   * Secure: 보안속성. HTTPS 요청으로만 전송되게 된다.
-  * HttpOnly: Javascript로 직접 접근할 수 없음 (모든 브라우저가 지원하지 않음)
+  * [**HttpOnly**](#): Javascript로 직접 접근할 수 없음 (모든 브라우저가 지원하지 않음)
 
 * WebStorage: 모바일 환경에서 서비스를 원활하게 하도록 하기 위해...
   임시적으로 저장되었다가 전송되고 난 후 사라지는 Session Storage
@@ -1628,16 +1628,59 @@ Parameterized Query #1
 
 ## 세션 및 인증 관리 취약
 
-* 인증
+* 인증 (Password)
   * 세션을 사용하는 인증
+  
   * 인증 시도 횟수를 제한해야 한다.
     (제안 해제하는 방법도 안전해야 한다.)
-  * 인증 정보를 생성 및 관리가 안전해야 한다.
-    * 복잡도
+    
+  * 인증 정보를 생성 및 관리가 안전해야 한다. (암호 정책 수립 기준 설명서)
+    
+    * **Nist Password Guide Lines**
+  * 복잡도
     * 비규칙성
-    * 사전 등록되지 않은
+    * 사전 등록되지 않은 (Password Dictionary)
     * 개인정보 관련
-
+    
+  * 패스워드 생성(설정) 정책
+  
+    * 1차. 회원가입에서 패스워드 입력
+      2차. 서버에서 입력된 패스워드 암호화
+      3차. 서버에서 암호화된 패스워드 DB에 저장
+  
+    * 클라이언트와 서버에 동일하게 적용되었는지 확인해야 한다.
+  
+      ```java
+      Public class LoginValidator implements Validator {
+      @Override
+      public void validate(Object target, Errors errors) {
+      MemberModel memberModel = (MemberModel) target;
+      
+      // 사용자 ID가 입력되지 않은 경우 에러 처리
+      if(memberModel.getUserId() == null ||
+      // trim(): 좌우 공백 제거
+      // isEmpty(): 
+      memberModel.getUserId().trim().isEmpty()){
+      errors.rejectValue("userId", "required");
+      }
+      
+      //패스워드가 입력되지 않은 경우 에러 처리
+      if(memberModel.getUserPw() == null ||
+      memberModel.getUserPw().trim().isEmpty()){
+      errors.rejectValue("userPw", "required");
+      }
+      
+      // 사용자 명이 등록되어 있지 않은 경우 에러 처리
+      if(memberModel.getUserName() == null ||
+      memberModel.getUserName().trim().isEmpty()){
+      errors.rejectValue("userName", "required");
+      }
+      }
+      }
+      ```
+  
+      
+  
 * 인가
   * 화면
   * 기능
@@ -1652,3 +1695,4 @@ Parameterized Query #1
   * SessionID 고정
     * 인증 전에서 인증 후. 동일한 세션이 유지되는 것
       (Login ⇒ Logout 동일한 SID)
+  * URL White에 사용되는 파라미터에서 SID를 추출할 수 있다.
