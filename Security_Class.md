@@ -1719,7 +1719,27 @@ Parameterized Query #1
       	}
       ```
   
-      
+  * 인증 시도 횟수 제한
+  
+    * 추가 값 입력 요구하여 무작위 대입 공격이 불가능 하도록 한다.
+    * 계정을 잠금시켜 추가 인증을 통해 해제 하도록 한다.
+  
+  * 다중로그인 정책
+  
+    * 다중 로그인: 서로 다른 브라우저 or 여러 PC에서 동일한 계정으로 로그인하는 것
+  
+  * 오랫동안 사용하지 않는 제한
+  
+    * 일정 시간 동안 요청이 없을 때 세션을 유지하지 않고 파기하도록 한다.
+    * 세션타임 아웃의 설정 적용 순서
+      * 프로그램에 코딩된 세션타임 (session.setMaxIncactiveInterval(int))
+      * 각 웹 어플리케이션 (WEB-INF/web.xml)
+      * [tomcat설치디렉토리]/conf/web.xml
+  
+  * 모든 페이지에 로그아웃 버튼이나 링크가 노출되도록 한다.
+  
+    * 로그아웃을 하지 않으면 세션이 남기 때문에 로그아웃을 유도하기 위해서라도 모든 페이지에 로그아웃 버튼을 노출시킨다.
+    * 사용자가 브라우저를 닫아도 서버에서는 연결을 완전히 끊는다는 것을 모르기 때문에 세션타임이 되기 전에는 세션을 유지할 수 있다.
   
 * 인가
   * 화면
@@ -1736,4 +1756,34 @@ Parameterized Query #1
     * 인증 전에서 인증 후. 동일한 세션이 유지되는 것
       (Login ⇒ Logout 동일한 SID)
   * URL White에 사용되는 파라미터에서 SID를 추출할 수 있다.
+
+
+
+##### Burp Suite (in WinXP)
+
+* @WinXP > Burp Suite 실행 후 IE로 openeg 접속
+
+* Burp Suite > Proxy > Options > 127.0.0.1:8080 선택 후 Edit 버튼을 클릭 
+  \> Bind to port를 8082로 변경 후 OK 버튼 클릭
+
+  \> Running 체크 박스를 토클해서 재 선택 > Interceptor 탭
+
+  \>Interceptor is on 버튼을 클릭해서 Interceptor is off로 설정
+  \> IE 브라우저에서 Proxy를 8082 선택 후 openeg로 접속
+
+  > ![img](https://lh4.googleusercontent.com/nplbOj53QUvxEZddG-0W1TKFla25NspwTu5MpVonOypYnbZDCyuTYVhiNkCFR_8JMPbzNXd0xmWhntApQl8EYof-eDqW-4411cm_s4D5LPG-uai5Br3_rI9OxmEv1KFwESTqd54b)
+
+  
+
+  ![img](https://lh4.googleusercontent.com/YZ_H9A77dNFQG3720wiMqqAWiBjLSbPFYYJ8jMc6-dgh9PWysuAe9pEL6lw8FTMYtOyyT7Di7VDAwgJPS1Tf6yZb1u_V2WkGggZYQc_Z69FS_HAGuu9Zp6OYN_lwp7HoBeaYDdK8)![img](https://lh5.googleusercontent.com/ZU08Ttyyq_eVyrGTAtI0N_w_wHsCHQiLH7Z-zR2S-qCgiCWCwSax6TeVyiP9t7Leb0sSiYfsScyceF3DTVrJeYuDLtxpcWSXipVekfkHr9tyZzcdwR_hyHx8SzRFsUblMxBs_ps3)
+
+  
+
+##### 회사에서 바로 통하는 엑셀 ebook
+
+http://hanbit.smilecdn.com/ebook/ebook_excel.pdf
+
+
+
+
 
