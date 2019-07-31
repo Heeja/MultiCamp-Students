@@ -2399,11 +2399,26 @@ Parameterized Query #1
     * 파일 크기 제한
     * 파일 종류 제한
       * 확장자 비교
-    * 파일을 외부에서 접근할 수 없는 경로에 저장
+      * Content-Type 비교
+      * File Signature 사용
+        https://www.garykessler.net/library/file_sigs.html
+        https://github.com/arimus/jmimemagic
+        https://www.npmjs.com/package/file-signature
+    * 파일을 외부에서 접근할 수 없는 경로에 저장 (WebRoot 밖에 저장)
     * 파일의 저장 경로와 파일 명을 외부에서 알 수 없도록 변경하여 사용
+      → 파일명을 랜덤한 값으로, 날짜/시간, 일련번호 등으로 변경
     * 파일의 실행 속성을 제거하고 저장.
+      
 
 * 파일 다운로드 취약점
+
+  * 경로 조작 여부를 검증하지 않은 경우
+  * 파일 내용을 검사하지 않고 다운로드 기능을 제공하는 경우
+    * 권한 밖의 디렉토리 또는 파일에 접근이 가능
+    * 악성 코드가 포함된 파일이 다운로드 될 수 있다.
+  * 방어 기법
+    * 경로 조작 문자열 포함 여부를 확인
+    * 다운로드 전 파일의 무결성 또는 내용 검증
 
 
 
