@@ -2177,6 +2177,95 @@ Parameterized Query #1
 
 
 
+* 실습
+
+  * Eclipse > openeg > WebContent > 마우스 오른쪽 클릭 > New > HTML File > xss.html
+
+  * [http://localhost:8080/openeg/xss.html?message=Hello%20World](http://localhost:8080/openeg/xss.html?message=Hello World) ⇒ Hello World 가 화면에 출력
+    [http://localhost:8080/openeg/xss.html?message=Hello%20Worldalert(document.cookie)](http://localhost:8080/openeg/xss.html?message=Hello Worldalert(document.cookie))
+
+    ```html
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="EUC-KR">
+    <title>Insert title here</title>
+    </head>
+    <body>
+    	<script>
+    		function onClickString2() {
+    			var a = document.URL;
+    			a = unescape(a);
+    			a = a.substring(a.indexOf("message=")+8, a.length);
+    			var regex = /^([a-zA-Z0-9+\s])*$/;
+    			if (regex.test(a)) {
+    				document.write(a);
+    			}
+    		}
+    		
+    		function onClickString() {
+    			var a = document.URL;
+    			a = unescape(a);
+    			a = a.substring(a.indexOf("message=")+8, a.length);
+    			a = sanitize(a);
+    			document.write(a);			
+    		}
+    		
+    		function sanitize(str) {
+    			var d = document.createElement("div");
+    			d.appendChild(document.createTextNode(str));
+    			return d.innerHTML;
+    		}
+    	</script>
+    	<div onclick="onClickString()">
+    		전달된 파라미터의 값을 확인하려면 여기를 클릭하세요.
+    	</div>
+    
+    </body>
+    </html>
+    ```
+
+    
+
+### 크로스 사이트 요청 위조 (CSRF)
+
+* 서버로 전달된 요청을 절차와 주체를 검증하지 않고 처리했을 때 발생한다.
+
+* 공격자가 심어 높은 코드를 통한 자동화된 요청이 희생자의 권한으로 실행된다.
+
+  * 패스워드 변경
+
+    | 패스워드 변경 신청 폼                      | 패스워드 변경 처리                                        |
+    | ------------------------------------------ | --------------------------------------------------------- |
+    | changePwForm.jsp                           | changePwProc.jsp                                          |
+    | New PW: ____                               | #1 인증(로그인) 여부를 판단                               |
+    | confirm PW: ____                           | #2 변경에 필요한 정보(New PW)<br />가 포함되어있는지 확인 |
+    |                                            | #3 세션 ⇒ 사용자 정보(user Id)                            |
+    | <input type="hidden" value="" /> 토큰 검증 | #4 Update userId PW ← New PW                              |
+
+  * 로그인한 사용자만 볼 수 있는 회원제 게시판에 자동 요청 코드를 삽입
+
+    ```html
+    <iframe src="changePwProc.jsp?newPW=123" width="0" height="0">
+    ```
+
+  * 방어 대책
+
+    * 요청 절차를 확인
+      * Referer 요청 헤더를 검증
+      * Token 검증
+      * CAPTCHA reCAPTCHA검증
+        (= 자동화된 요청을 방지 = 사용자와의 상호작용을 통한 요청 처리)
+    * 요청 주체를 확인한다.
+      * 주요 기능에 대해서 재인증, 재인가 후 처리한다.
+        * 정보가 생성, 수정, 삭제되는 경우(=트랜젝션이 발생)
+        * 중요 정보를 다루는 기능
+        * 과금이 발생하는 기능
+
+
+
+
+
 ###### 회사에서 바로 통하는 엑셀 ebook
 
 http://hanbit.smilecdn.com/ebook/ebook_excel.pdf
