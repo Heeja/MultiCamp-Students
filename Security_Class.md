@@ -2262,6 +2262,149 @@ Parameterized Query #1
         * 중요 정보를 다루는 기능
         * 과금이 발생하는 기능
 
+* [실습] 게시판 자동 글쓰기
+
+  * 자동 글쓰기 코드
+
+  ```html
+  <form action="write.do" method="post" enctype="multipart/form-data">
+  <input type="text" name="subject" value="저렴한 대출상품 안내"/> 
+  <input type="hidden" name="writer" value="관리자" /> 
+  <input type="hidden" name="writerId" value="admin" />
+  <textarea name="content">무담보 대출 상품 안내 연락주세요...</textarea>
+  <input type="submit" value="확인" id="btnSubmit" />
+  </center>
+  </form>
+  
+  <script>document.getElementById("btnSubmit").click();</script>
+  ```
+
+  * 위 스크립트가 실행되는 이유
+
+    * 스크립트 코드 실행에 대해 검증하지 않고 있다.
+    * write.do 요청을 받은 서버는 검증 없이 DB에 값을 넣는다.
+
+  * 해결 기법 (글쓰기: GET방식, write.do)
+
+    * 임의 값(토큰) 생성
+
+    * 세션에 저장(sToken) → 글쓰기 화면(write.jsp)
+
+    * 위에서 생성한 토큰을 히든 필드의 값으로 설정
+
+    * POST 방식으로 write.do에서 요청 파라미터로 온 토큰(pToken)과 세션에 저장된 토큰을 비교
+
+    * 일치: 글 저장 / 불일치: list 페이지로 리다이렉트
+
+    * Eclipse > BoardController.java > boardWrite()
+
+      ```java
+      //  글쓰기 화면(페이지)을 요청받으면 글쓰기 화면을 반환
+      	@RequestMapping("/write.do")
+      	public String boardWrite(@ModelAttribute("BoardModel") BoardModel boardModel, HttpSession session) {
+      		// 임의의 토큰을 생성한 후 세션에 저장
+      		String token = UUID.randomUUID().toString();
+      		session.setAttribute("stoken", token);
+      		
+      		return "/board/write";
+      	}
+      ```
+
+      write.jsp
+
+      ```jsp
+      <form action="write.do" method="post" onsubmit="return writeFormCheck()" enctype="multipart/form-data">
+      <%-- 
+      	서버에서 생성 후 세션에 저장해 둔 토큰값을 히든 필드의 값으로 설정
+      --%>
+      <input type="hidden" name="ptoken" value="${stoken}" />
+      
+      ```
+
+      BoardController.java > boardWriteProc()
+
+      ```java
+      @RequestMapping(value = "/write.do", method = RequestMethod.POST)
+      	public String boardWriteProc(@ModelAttribute("BoardModel") BoardModel boardModel, MultipartHttpServletRequest request, HttpSession session) {
+      		
+      		// 파라미터로 전달된 토큰값과 세션에 저장된 토큰값을 비교하여
+      		// 일치하는 경우에는 게시물을 저장하고, 
+      		// 일치하지 않는 경우에는 list.do로 리다이렉트 한다.
+      		String sToken = (String)session.getAttribute("stoken");
+      		String pToken = request.getParameter("ptoken");
+      		if (pToken == null || !pToken.equals(sToken)) {
+      			return "redirect:list.do";
+      		}
+      		
+      		String uploadPath = session.getServletContext().getRealPath("/") + "files/";
+      		File dir = new File(uploadPath);
+      		if (!dir.exists()) {
+      			dir.mkdir();
+      		}
+      
+      		MultipartFile file = request.getFile("file");
+      		if (file != null && !"".equals(file.getOriginalFilename())) {
+      			String fileName = file.getOriginalFilename();
+      			File uploadFile = new File(uploadPath + fileName);
+      			if (uploadFile.exists()) {
+      				fileName = new Date().getTime() + fileName;
+      				uploadFile = new File(uploadPath + fileName);
+      			}
+      
+      			try {
+      				file.transferTo(uploadFile);
+      			} catch (Exception e) {
+      				System.out.println("upload error");
+      			}
+      						
+      			boardModel.setFileName(fileName);
+      		}
+      
+      		// 진단 
+      		// 클라이언트에서 전달된 게시판 내용에 
+      		// 실행 가능한 스크립트 코드 포함 여부를 확인하지 않고
+      		// DB에 저장하고 있음 
+      		// --> DB에 저장된 스크립트 코드가 지속적으로 사용자 브라우저로 
+      		//     전달되어 실행되게 됨 
+      		// ==> Stored XSS 취약점을 가지고 있다.
+      		
+      		// 대응
+      		// 클라이언트에서 전달된 게시판 내용에 포함된 
+      		// 실행 가능한 스크립트를 HTML 인코딩한 후 DB에 저장하도록 수정.
+      		
+      		// 게시판 내용을 추출
+      //		String c = boardModel.getContent();
+      //		XssFilter filter = XssFilter.getInstance("lucy-xss-superset.xml");
+      //		c = filter.doFilter(c);
+      //		boardModel.setContent(c);		
+      		
+      		
+      		String content = boardModel.getContent().replaceAll("\r\n", "<br />");
+      		boardModel.setContent(content);
+      		service.writeArticle(boardModel);
+      
+      		return "redirect:list.do";
+      	}
+      ```
+
+* 파일 업로드 취약점
+
+  * 업로드 파일의 크기와 종류를 제한하지 않는 경우
+    * 의 디스크 자원 or 연결 자원을 고갈 시켜 서비스 거부 공격(DoS)에 사용될 수 있다.
+    * 서버에서 실행될 수 있는 파일(SSS, WebShell)을 업로드해서 실행하여 서버의 제어권을 탈취할 수 있다.
+    * 클라이언트에서 실행될 수 있는 악성 코드가 포함된 파일을 업로드하여 악성 코드 유포지로 악용될 수 있다.
+  * 업로드한 파일을 외부에서 접근 가능한 경로에 저장하는 경우
+    * WebRoot 아래 파일이 저장되는 경우
+  * 방어기법
+    * 파일 크기 제한
+    * 파일 종류 제한
+      * 확장자 비교
+    * 파일을 외부에서 접근할 수 없는 경로에 저장
+    * 파일의 저장 경로와 파일 명을 외부에서 알 수 없도록 변경하여 사용
+    * 파일의 실행 속성을 제거하고 저장.
+
+* 파일 다운로드 취약점
+
 
 
 
