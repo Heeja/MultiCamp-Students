@@ -2641,9 +2641,207 @@ Parameterized Query #1
 ### 파라미터 조작과 잘못된 접근제어
 
 * 파라미터 조작의 방어에는 한계가 있다.
+
 * 웹페이지: 사용자의 권한에 따라서 버튼을 노출, 숨김
+
 * 기능: 
+
 * 데이터: 사용자가 데이터에 접근할 수 있는 권한이 있는지 확인검증
+
+* 실습
+
+  * WebGoat > Access Control Flaws > LAB : Role Based Access Control Flaw
+
+  * RoleBasedAccessControl.java > handleRequest()
+
+    ```java
+    public void handleRequest(WebSession s)
+    	{
+    		// Here is where dispatching to the various action handlers happens.
+    		// It would be a good place verify authorization to use an action.
+    
+    		// System.out.println("RoleBasedAccessControl.handleRequest()");
+    		if (s.getLessonSession(this) == null) s.openLessonSession(this);
+    
+    		String requestedActionName = null;
+    		try
+    		{
+    			requestedActionName = s.getParser().getStringParameter("action");
+    		} catch (ParameterNotFoundException pnfe)
+    		{
+    			// Let them eat login page.
+    			requestedActionName = LOGIN_ACTION;
+    		}
+    		// System.out.println("Requested lesson action: " + requestedActionName);
+    
+    		try
+    		{
+    			DefaultLessonAction action = (DefaultLessonAction) getAction(requestedActionName);
+    			if (action != null)
+    			{
+    				// System.out.println("RoleBasedAccessControl.handleRequest() dispatching to: " +
+    				// action.getActionName());
+    				if (!action.requiresAuthentication())
+    				{
+    					// Access to Login does not require authentication.
+    					action.handleRequest(s);
+    				}
+    				else
+    				{
+    					// ***************CODE HERE*************************
+    
+    					// *************************************************
+    					
+    					// 요청한 사용자가 인증받은 사용자 인지를 확인
+    					if (action.isAuthenticated(s))
+    					{
+    						// 요청을 처리하는 부분
+    						// 요청이 왔을 때 사용자의 인증 여부만 판단하고 권한 여부를 판단하지 않고 쵸엉을 처리
+    						// == 기능 레벨에서의 접근통제를 하고 있지 않다.
+    						// action.handleRequest(s);
+    						
+    						// 조치 방안
+    						// 요청한 사용자의 권한 여부를 확인 후 처리하도록 수정하자.
+    						// public boolean isAuthorized(WebSession s, 
+    						int employeeId = action.getUserId(s);
+    						String functionId = action.getActionName();
+    						if (action.isAuthorized(s, employeeId, functionId)){
+    							action.handleRequest(s);
+    						} else {
+    							throw new UnauthorizedException();
+    						}
+    					}
+    					else
+    						throw new UnauthenticatedException();
+    				}
+    			}
+    			else
+    				setCurrentAction(s, ERROR_ACTION);
+    		} catch (ParameterNotFoundException pnfe)
+    		{
+    			// System.out.println("Missing parameter");
+    			pnfe.printStackTrace();
+    			setCurrentAction(s, ERROR_ACTION);
+    		} catch (ValidationException ve)
+    		{
+    			// System.out.println("Validation failed");
+    			ve.printStackTrace();
+    			setCurrentAction(s, ERROR_ACTION);
+    		} catch (UnauthenticatedException ue)
+    		{
+    			s.setMessage("Login failed");
+    			// System.out.println("Authentication failure");
+    			ue.printStackTrace();
+    		} catch (UnauthorizedException ue2)
+    		{
+    			s.setMessage("You are not authorized to perform this function");
+    
+    			// Update lesson status if necessary.
+    			String stage = getStage(s);
+    			if (STAGE2.equals(stage))
+    			{
+    				try
+    				{
+    					if (RoleBasedAccessControl.DELETEPROFILE_ACTION.equals(requestedActionName)
+    							&& !isAuthorized(s, getUserId(s), RoleBasedAccessControl.DELETEPROFILE_ACTION))
+    					{
+    						setStageComplete(s, STAGE2);
+    					}
+    				} catch (ParameterNotFoundException pnfe)
+    				{
+    					pnfe.printStackTrace();
+    				}
+    			}
+    			// System.out.println("isAuthorized() exit stage: " + getStage(s));
+    			// Update lesson status if necessary.
+    			if (STAGE4.equals(stage))
+    			{
+    				try
+    				{
+    					// System.out.println("Checking for stage 4 completion");
+    					DefaultLessonAction action = (DefaultLessonAction) getAction(getCurrentAction(s));
+    					int userId = Integer.parseInt((String) s.getRequest().getSession()
+    							.getAttribute(getLessonName() + "." + RoleBasedAccessControl.USER_ID));
+    					int employeeId = s.getParser().getIntParameter(RoleBasedAccessControl.EMPLOYEE_ID);
+    
+    					if (!action.isAuthorizedForEmployee(s, userId, employeeId))
+    					{
+    						setStageComplete(s, STAGE4);
+    					}
+    				} catch (Exception e)
+    				{
+    					// swallow this - shouldn't happen inthe normal course
+    					// e.printStackTrace();
+    				}
+    			}
+    
+    			// System.out.println("Authorization failure");
+    			setCurrentAction(s, ERROR_ACTION);
+    			ue2.printStackTrace();
+    		} catch (Exception e)
+    		{
+    			// All other errors send the user to the generic error page
+    			// System.out.println("handleRequest() error");
+    			e.printStackTrace();
+    			setCurrentAction(s, ERROR_ACTION);
+    		}
+    
+    		// All this does for this lesson is ensure that a non-null content exists.
+    		setContent(new ElementContainer());
+    	}
+    ```
+
+### 안전하지 않은 Redirect 와 Forward
+
+* 이동되는 목적지에 대한 검증이 이루어져야 한다.
+* 입력 값을 검증하지 않고 Redirect, Forward에 사용하면 안된다.
+
+* **Redirect**
+  * 웹 서버와 브라우저가 서로 통신한다.
+  * abc.jsp → sendRedirect(main.jsp) → main.jsp
+  * 최초 요청 페이지에서 전달 받은 파라미터를 Redirect한 페이지에서 사용할 수 없다.
+* **Forward**
+  * 사용자가 요청하면 서버 내부적으로 다른 쪽으로 돌려보낸다.
+  * 보이는 내용은 다른 쪽으로 보낸 곳이지만 주소는 여전히 이전 주소다.
+  * 최초 요청에서 요청된 파라미터 값을 사용할 수 있다.
+
+
+
+### HTTP 응답 분할
+
+* 응답 헤더를 분할 하여 스크립트 코드를 삽입. 실행되도록 만든다.
+* 개행 문자(CRLF) 포함 여부를 확인하고 응답헤더에 사용해야 한다.
+  * URL
+  * Set-Cookie
+  * Content-type
+  * Content_Disposition
+
+### 잘못된 보안 설정
+
+* 디폴트 설정 상태로 사용하면 안된다.
+* 디렉토리 리스팅
+  * 특정 디렉토리에 디폴트 파일이 없는 ㄱㅇ우 디렉토리의 파일 리스트를 브라우저로 보내주게 된다.
+  * 웹 사이트 구조를 파악할 수 있는 취약점
+* 에러 노출
+  * 서버 설정을 통해 에러를 로그로 저장.
+  * 에러 페이지는 따로 만들어서 표출한다.
+
+
+
+### 안전하지 않은 예외처리
+
+* 오류 메시지를 통한 정보 노출
+
+  ```java
+  try{
+  	doSomting();
+  } catch(Exception e) {
+  	e.printStackTrace();	// 오류나는 정보를 그대로 출력하게된다.
+  }
+  ```
+
+  * 항상 오류가 발생 할 수 있는 것을 알았다면, 오류 메시지를 노출하지 않도록 하고 로그에 기록을 남겨야 한다.
+  * 오류를 분류하지 않고 전체를 묶어 처리 할 경우에 오류 정보가 노출 될 수 있다.
 
 
 
