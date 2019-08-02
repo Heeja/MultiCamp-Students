@@ -2393,8 +2393,11 @@ Parameterized Query #1
     * 의 디스크 자원 or 연결 자원을 고갈 시켜 서비스 거부 공격(DoS)에 사용될 수 있다.
     * 서버에서 실행될 수 있는 파일(SSS, WebShell)을 업로드해서 실행하여 서버의 제어권을 탈취할 수 있다.
     * 클라이언트에서 실행될 수 있는 악성 코드가 포함된 파일을 업로드하여 악성 코드 유포지로 악용될 수 있다.
+    
   * 업로드한 파일을 외부에서 접근 가능한 경로에 저장하는 경우
+    
     * WebRoot 아래 파일이 저장되는 경우
+    
   * 방어기법
     * 파일 크기 제한
     * 파일 종류 제한
@@ -2408,19 +2411,235 @@ Parameterized Query #1
     * 파일의 저장 경로와 파일 명을 외부에서 알 수 없도록 변경하여 사용
       → 파일명을 랜덤한 값으로, 날짜/시간, 일련번호 등으로 변경
     * 파일의 실행 속성을 제거하고 저장.
+    
+  * 실습
+    
+    * @WinXP > openeg > 게시판
+      https://github.com/tennc/webshell
       
+    * 파일 업로드 취약점을 해결
+      BoardController.java
+      
+      ```java
+      // 	파일 저장 경로를 상수로 정의
+      	final static String UPLOAD_FILE_PATH = "c:\\\\upload\\files\\";
+      	
+      	@RequestMapping(value = "/write.do", method = RequestMethod.POST)
+      	public String boardWriteProc(@ModelAttribute("BoardModel") BoardModel boardModel, MultipartHttpServletRequest request, HttpSession session) {
+      		
+      		// 파라미터로 전달된 토큰값과 세션에 저장된 토큰값을 비교하여
+      		// 일치하는 경우에는 게시물을 저장하고, 
+      		// 일치하지 않는 경우에는 list.do로 리다이렉트 한다.
+      		String sToken = (String)session.getAttribute("stoken");
+      		String pToken = request.getParameter("ptoken");
+      		if (pToken == null || !pToken.equals(sToken)) {
+      			return "redirect:list.do";
+      		}
+      		
+      		//  소스 코드 분석
+      		//  - 외부에서 접근 가능한 경로에 업로드 파일을 저장하고 있음
+      		//  - 업로드 파일의 이름을 그대로 사용하고 있음
+      		//  - 파일의 크기와 종류를 제한하지 않고 있음
+      		//  ==> 파일 업로드 취약점이 존재
+      
+      		//  대응 방안
+      		//  1. 파일의 크기를 제한
+      		//  2. 파일의 종류를 제한
+      		//  3. 저장되는 파일의 이름을 외부에서 유추할 수 없도록 변경
+      		//  4. 외부에서 접근할 수 없는 경로에 파일을 저장
+      		
+      		// #1 파일 저장 경로를 외부에서 접근할 수 없는 경로로 변경
+      		//    WebRoot 밖으로 변경
+      		String uploadPath = UPLOAD_FILE_PATH;
+      		File dir = new File(uploadPath);
+      		if (!dir.exists()) {
+      			dir.mkdir();
+      		}
+      
+      		MultipartFile file = request.getFile("file");
+      		
+      		// #2 업로드 파일의 크기를 제한
+      		//    파일의 크기가 2MB 이상이면 list.do로 리다이렉트
+      		if (file != null && file.getSize() >= 2048000) {
+      			return "redirect:list.do";
+      		}		
+      		
+      		if (file != null && !"".equals(file.getOriginalFilename())) {
+      			String fileName = file.getOriginalFilename();
+      			
+      			// #3 파일의 확장자 검증을 수행
+      			//    png, jpg 이외의 확장자를 가진 파일은 저장하지 않도록 처리
+      			if (fileName.endsWith(".png") || fileName.endsWith(".jpg")) {
+      				
+      				// #4 파일 저장에 사용하는 이름을 외부에서 알 수 없도록 변경
+      				//    난수화해서 저장
+      				String savedFileName = UUID.randomUUID().toString();
+      				
+      				// File uploadFile = new File(uploadPath + fileName);
+      				File uploadFile = new File(uploadPath + savedFileName);
+      				/*	난수를 이용해서 파일을 저장하므로 
+      				 *	중복 파일이 생성되지 않으므로 해당 로직을 생략
+      				if (uploadFile.exists()) {
+      					fileName = new Date().getTime() + fileName;
+      					uploadFile = new File(uploadPath + fileName);
+      				}
+      				*/
+      
+      				try {
+      					file.transferTo(uploadFile);
+      				} catch (Exception e) {
+      					System.out.println("upload error");
+      				}
+      				
+      				// 파일 업로드에 성공한 경우에만 
+      				// 파일 정보를 DB에 저장하기 위해서 값을 설정
+      				boardModel.setFileName(fileName); // 원본 파일명
+      				boardModel.setSavedFileName(savedFileName); // 저장에 사용한 파일명
+      			} 
+      		}
+      
+      ```
 
 * 파일 다운로드 취약점
 
   * 경로 조작 여부를 검증하지 않은 경우
+  
   * 파일 내용을 검사하지 않고 다운로드 기능을 제공하는 경우
     * 권한 밖의 디렉토리 또는 파일에 접근이 가능
     * 악성 코드가 포함된 파일이 다운로드 될 수 있다.
+    
   * 방어 기법
     * 경로 조작 문자열 포함 여부를 확인
     * 다운로드 전 파일의 무결성 또는 내용 검증
+    
+  * 실습
+  
+    * 파일 다운로드 기능 구현
+      BoardController.java
+  
+      ```java
+      // 	파일 다운로드 기능을 구현 (297페이지)
+      	@RequestMapping("/get_image.do")
+      	public void getImage(HttpServletRequest request, HttpSession session, HttpServletResponse response) {
+      		// 파일 정보를 추출하기 위해서 게시물 번호를 요청 파라미터에서 추출
+      		// = "/get_image.do?idx=게시판번호" 형식으로 호출됨
+      
+      		// idx 파라미터가 없거나 또는 잘못 전달되는 경우에는 반환 
+      		int idx = 0;
+      		try {
+      			idx = Integer.parseInt(request.getParameter("idx"));
+      		} catch (Exception e) {
+      			return;
+      		}
+      		
+      		// idx를 이용해서 게시판 정보를 조회
+      		BoardModel board = service.getOneArticle(idx);
+      		
+      		// 저장된 파일명과 원본 파일명 추출
+      		String fileName = board.getFileName();
+      		String savedFileName = board.getSavedFileName();
+      		
+      		// 저장된 파일 경로를 설정
+      		String filePath = UPLOAD_FILE_PATH + savedFileName; 
+      		
+      		// 저장된 파일을 읽어서 응답을 통해서 브라우저로 전달
+      		BufferedOutputStream out = null;
+      		InputStream in = null;
+      		try {
+      			response.setContentType("image/jpeg");
+      			response.setHeader("Content-Disposition", "inline; filename="+fileName);
+      			
+      			File file = new File(filePath);
+      			in = new FileInputStream(file);
+      			
+      			out = new BufferedOutputStream(response.getOutputStream());
+      			
+      			int len; // 파일에서 읽어드린 데이터의 길이
+      			byte[] buf = new byte[1024]; // 파일에서 읽어드린 데이터를 저장 공간
+      			while ((len = in.read(buf)) > 0) {
+      				out.write(buf, 0, len);
+      			}
+      			
+      		} catch (Exception e) {
+      			
+      		} finally {
+      			//	자원 해제 구문
+      			if (out != null) {
+      				try { out.close(); } catch (Exception e) {}
+      			}
+      			if (in != null) {
+      				try { in.close(); } catch (Exception e) {}
+      			}
+      		}
+      	}
+      ```
+  
+    * view.jsp
+  
+      ```jsp
+      <%-- 업로드 파일을 직접 참조(호출)하는 방식 --%>
+      첨부파일 : 
+      <br /><a href="../files/${board.fileName}" target="_blank">${board.fileName}</a>
+      <br /><img src="../files/${board.fileName}" />
+      								
+      <br />
+      <%-- 파일 다운로드 기능을 이용해서 다운로드하는 방식 --%>
+      첨부파일 : 
+      <br /><a href="get_image.do?idx=${board.idx}" target="_blank">${board.fileName}</a>
+      <br /><img src="get_image.do?idx=${board.idx}" />
+      ```
+  
+    * Eclipse > OpenCrypt.java
 
 
+
+## 암호화
+
+* 키
+
+  * 대칭키
+
+  * 비대칭키
+
+    * 공개키: 모두에게 공개해 놓은 키. 공개키로 암호화한 것은 비밀키로 복호화 할 수 있다.
+
+      * 공개키 암호화 → 비밀키 복호화 = 기밀성
+      * 비밀키 암호화 → 공개키 복호화 = 인증,  무결성
+
+    * 물리적으로 키는 분리되어야 한다. (2차 적으로 논리적 분리)
+
+      * 별도의 저장장치에 저장 (*:/, 외장하드, USB 등)
+
+      * DB에 저장할 경우 별로의 테이블로 저장
+
+    * 접근 통제
+
+      * 별도의 저장장치나 DB에 인가된 사용자만 접근할 수 있어야 한다. (White Lisk)
+
+* 표기: 알고리즘 / 운영 모드 / 패딩 모드
+
+  * Cipher.getInstance("**AES/CBC/PKCS5Padding**")
+  * Cipher.getInstance("AES") 이렇게 명시하면 Default 모드를 사용한다.
+    * Default: ECB/
+
+* 운영 모드
+
+  * **ECB (Electric CodeBook)** 
+    * **Default 모드**
+    * 들어오는 신호를 그대로 암호화
+    * 병렬 처리
+    * 암호화가 빠르다
+    * 암호 강도가 약하다
+  * **CBC (Cipher Block Chaining)**
+    * 범용적으로 많이 사용
+    * IV(Initial Vector)를 첫번째 블록 암호화에 사용
+  * **CFB (Cipher FeedBack)**
+  * **OFB (Output FeedBack)**
+  * **CTR (CounTeR)**
+
+  
+
+  * 스트리밍: 들어오는 데이터 순서대로
 
 
 
