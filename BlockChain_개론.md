@@ -189,3 +189,12 @@ PoW: 작업 증명
 PoS: 지분 증명
 
 DPoS: 위임 지분 증명
+
+
+
+
+
+# Note
+
+https://docs.microsoft.com/ko-kr/azure/sql-database/sql-database-serverless
+
