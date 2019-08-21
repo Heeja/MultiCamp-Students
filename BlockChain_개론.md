@@ -198,3 +198,15 @@ DPoS: 위임 지분 증명
 
 https://docs.microsoft.com/ko-kr/azure/sql-database/sql-database-serverless
 
+
+
+
+
+
+
+## Ethereum
+
+Block List
+
+* block 정보를 제공
+* transaction 내용 표시
