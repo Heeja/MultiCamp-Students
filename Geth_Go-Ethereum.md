@@ -92,7 +92,7 @@ Geth에서 지원하는 자바스크립트 환경
 
 Interative geth
 
-
+https://goodplayer.tistory.com/8
 
 
 
@@ -349,6 +349,82 @@ true
 * 일반 사용자의 접속을 허용하고 블록체인과 연결 시켜주는 역할
 
 ![img](https://steemitimages.com/DQmVTKkYB6JL15YmAmYDEbohFFAyoBgyXTd8HH8tka7EST5/image.png)
+
+https://steemit.com/coinkorea/@etainclub/smart-contract-6-dapp
+
+
+
+#### POSTMAN
+
+https://www.getpostman.com/downloads/
+
+
+
+* RPC API 실행
+  * RPC blockNumber 알아보기
+    Post방식, http://localhost:8545, Body - Raw: JSON(application/json) 으로 Send!
+
+```json
+{
+	"jsonrpc" : "2.0",
+	"method" : "eth_blockNumber",
+	"id" : 10
+}
+```
+
+
+
+**λ** geth --datadir chaindata --networkid 33 --nodiscover --maxpeers 0 --rpc -rpcaddr "0.0.0.0" --rpcpost 8545 --rpccorsdomain "*" --rpcapi "db,eth,net,web3,admin,devug,miner,shh,txpool,personal" console
+
+- --maxpeers: 접속 수 설정
+- 
+
+
+
+```bash
+λ geth --datadir chaindata --networkid 33 --nodiscover --maxpeers 0 --rpc -rpcaddr "0.0.0.0" --rpcport 8545 --rpccorsdomain "*" --rpcapi "db,eth,net,web3,admin,devug,miner,shh,txpool,personal" console
+INFO [08-22|15:53:06] Maximum peer count                       ETH=0 LES=0 total=0
+INFO [08-22|15:53:06] Starting peer-to-peer node               instance=Geth/v1.8.2-stable-b8b9f7f4/windows-amd64/go1.9.2
+INFO [08-22|15:53:06] Allocated cache and file handles         database=c:\\work_dapp\\geth\\geth182\\chaindata\\geth\\chaindata cache=768 handles=1024
+INFO [08-22|15:53:06] Initialised chain configuration          config="{ChainID: 33 Homestead: 0 DAO: <nil> DAOSupport: false EIP150: <nil> EIP155: 0 EIP158: 0 Byzantium: <nil> Constantinople: <nil> Engine: unknown}"
+INFO [08-22|15:53:06] Disk storage enabled for ethash caches   dir=c:\\work_dapp\\geth\\geth182\\chaindata\\geth\\ethash count=3
+INFO [08-22|15:53:06] Disk storage enabled for ethash DAGs     dir=C:\\Users\\student\\AppData\\Ethash                   count=2
+INFO [08-22|15:53:07] Initialising Ethereum protocol           versions="[63 62]" network=33
+INFO [08-22|15:53:07] Loaded most recent local header          number=247 hash=499a05…07aa62 td=33648264
+INFO [08-22|15:53:07] Loaded most recent local full block      number=247 hash=499a05…07aa62 td=33648264
+INFO [08-22|15:53:07] Loaded most recent local fast block      number=247 hash=499a05…07aa62 td=33648264
+INFO [08-22|15:53:07] Loaded local transaction journal         transactions=7 dropped=7
+INFO [08-22|15:53:07] Regenerated local transaction journal    transactions=0 accounts=0
+WARN [08-22|15:53:07] Blockchain not empty, fast sync disabled
+INFO [08-22|15:53:07] Starting P2P networking
+INFO [08-22|15:53:07] RLPx listener up                         self="enode://6a4a73514fbe22ad4b6d1b4221f8e3cc224bb3a17f171991568ec3b59cffe5ebe42c7985900e8a5910c3f7df9bbcb8b2b30a3596cc4082b2d04ada4ec4fd2e97@[::]:30303?discport=0"
+INFO [08-22|15:53:07] IPC endpoint opened                      url=\\\\.\\pipe\\geth.ipc
+INFO [08-22|15:53:07] HTTP endpoint opened                     url=http://0.0.0.0:8545   cors=* vhosts=localhost
+Welcome to the Geth JavaScript console!
+
+instance: Geth/v1.8.2-stable-b8b9f7f4/windows-amd64/go1.9.2
+INFO [08-22|15:53:07] Etherbase automatically configured       address=0x72255C3599368bc80C831a8aEBfFB4988582b5e5
+coinbase: 0x72255c3599368bc80c831a8aebffb4988582b5e5
+at block: 247 (Thu, 22 Aug 2019 15:30:59 KST)
+ datadir: c:\work_dapp\geth\geth182\chaindata
+ modules: admin:1.0 debug:1.0 eth:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+>
+```
+
+
+
+* POSTMAN Send결과
+  **result**: Mining된 블록 수
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1011,
+    "result": "0xf7"
+}
+```
+
+
 
 
 
