@@ -426,6 +426,8 @@ at block: 247 (Thu, 22 Aug 2019 15:30:59 KST)
 
 
 
+https://github.com/ethereum/wiki/wiki/JSON-RPC
+
 
 
 ##### 디앱(dApp)에 대해서
