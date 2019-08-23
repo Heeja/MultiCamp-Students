@@ -44,7 +44,7 @@ Private net.
 
 
 
-**계정생성**
+##### **계정생성**
 
 
 
@@ -79,8 +79,8 @@ Address: {**1d428f621a1ff7377f0168de89b5c853d7bd0a23**}
 
 
 
-* Geth 초기화!
-  **λ** geth --datadir .\chaindata\ init .\genesis.json
+##### Geth 초기화!
+**λ** geth --datadir .\chaindata\ init .\genesis.json
 
 
 
@@ -96,14 +96,14 @@ https://goodplayer.tistory.com/8
 
 
 
-* 계정 주소 생성
+##### 계정 주소 생성
 
 ```go
 > personal.newAccount("비밀번호")
 "0x881e612296d0d0727bda48d110b25ce44a877432"
 ```
 
-* Coinbase 확인 및 변경
+##### Coinbase 확인 및 변경
 
 ```go
 > eth.coinbase
@@ -118,7 +118,7 @@ true
 "0x72255c3599368bc80c831a8aebffb4988582b5e5"
 ```
 
-* 계정 잔액 확인
+##### 계정 잔액 확인
 
 ```go
 eth.getBalance(eth.accounts[i]);	// i번째 계정주소의 Balance 확인
@@ -126,7 +126,7 @@ eth.getBalance(eth.accounts[i]);	// i번째 계정주소의 Balance 확인
 
 
 
-* 블록 생성 개수 확인
+##### 블록 생성 개수 확인
 
 ```go
 > eth.blockNumber;
@@ -135,7 +135,7 @@ eth.getBalance(eth.accounts[i]);	// i번째 계정주소의 Balance 확인
 
 
 
-* 마이닝 상태 확인
+#####  마이닝 상태 확인
 
 ```go
 > eth.mining
@@ -144,7 +144,7 @@ false
 
 
 
-* Mining 시작
+#####  Mining 시작
 
 ```go
 > miner.start(i);	// Mining에 사용할 CPU(or GPU) 쓰레드 개수
@@ -152,7 +152,7 @@ false
 
 
 
-* Mining보상 토큰을 Ethereum 계산
+#####  Mining보상 토큰을 Ethereum 계산
 
 ```go
 > web3.fromWei(eth.getBalance(eth.coinbase),"ether")
@@ -161,9 +161,7 @@ false
 
 
 
-
-
-* 계정 Transaction Unlock
+#####  계정 Transaction Unlock
 
 ```go
 > personal.unlockAccount(eth.accounts[0])
@@ -181,8 +179,8 @@ true
 
 
 
-* 송금 Transaction 실행
-  (**web3.toWei( 금액, "단위" )** 함수를 통해서 이더리움으로 거래하였다.)
+#####  송금 Transaction 실행
+(**web3.toWei( 금액, "단위" )** 함수를 통해서 이더리움으로 거래하였다.)
 
 ```go
 > eth.sendTransaction({from: eth.accounts[0], to:eth.accounts[2], value:web3.toWei(10,"ether")})
@@ -192,7 +190,7 @@ INFO [08-22|14:41:37] Submitted transaction                    fullhash=0x54e3c5
 
 
 
-* pendingTransaction 확인
+#####  pendingTransaction 확인
 
 ```
 > eth.pendingTransactions
@@ -202,7 +200,7 @@ INFO [08-22|14:41:37] Submitted transaction                    fullhash=0x54e3c5
 
 
 
-* 송금 처리를 하기 위해 Mining이 필요하다.
+#####  송금 처리를 하기 위해 Mining이 필요하다.
 
 ```go
 > eth.getBalance(eth.accounts[2])
@@ -231,9 +229,9 @@ true
 
 
 
-* Block정보 확인
-  **eth.getBlock(i)** / i: 블록 번호
-  Transaction이 없는 블록임을 확인 (**Line: 20, 42**)
+#####  Block정보 확인
+**eth.getBlock(i)** / i: 블록 번호
+Transaction이 없는 블록임을 확인 (**Line: 20, 42**)
 
 ```go
 > eth.getBlock(0)
@@ -284,8 +282,10 @@ true
 }
 ```
 
-* Transaction 처리 블록 확인
-  (**Line: 20. Transaction 내용**)
+
+
+#####  Transaction 처리 블록 확인
+(**Line: 20. Transaction 내용**)
 
 ```go
 > eth.getBlock(214)
@@ -315,8 +315,8 @@ true
 
 
 
-* Transaction 확인
-  **blockNumber**에 Trasaction이 저장된 블록 번호를 확인할 수 있다.
+#####  Transaction 확인
+**blockNumber**에 Trasaction이 저장된 블록 번호를 확인할 수 있다.
 
 
 ```go
@@ -360,9 +360,10 @@ https://www.getpostman.com/downloads/
 
 
 
-* RPC API 실행
-  * RPC blockNumber 알아보기
-    Post방식, http://localhost:8545, Body - Raw: JSON(application/json) 으로 Send!
+#####  RPC API 실행
+
+* RPC blockNumber 알아보기
+  Post방식, http://localhost:8545, Body - Raw: JSON(application/json) 으로 Send!
 
 ```json
 {
@@ -426,7 +427,60 @@ at block: 247 (Thu, 22 Aug 2019 15:30:59 KST)
 
 
 
+#### JSON-RPC API 정보
+
 https://github.com/ethereum/wiki/wiki/JSON-RPC
+
+
+
+#### web3.js
+
+https://web3js.readthedocs.io/en/v1.2.1/
+
+* JSON RPC로 Geth를 컨트롤 한다.
+
+* JSON 형식으로 매번 만들어서 통신해야하는 번거로움을 줄이기 위해 javascript문으로 작성된 코드를 JSON 형태로 인코딩하여 전송해준다.
+
+
+
+##### Web3.js BlockNumber 과 특정 Block 정보 확인
+
+```js
+var Web3 = require('web3');
+
+var web3 = new Web3('http://localhost:8545');
+
+//console.log(web3);
+
+web3.eth.getBlockNumber((err, number) => {
+    console.log(number);
+})
+
+web3.eth.getBlock(247)
+.then((block) => {
+    console.log(block);
+});
+```
+
+
+
+##### Command로도 Web3.js를 사용할 수 있다.
+
+```
+> web3.eth.getBlock(247).then((block)=>{console.log(block)})
+Promise {
+  <pending>,
+  domain:
+   Domain {
+     domain: null,
+     _events:
+      [Object: null prototype] {
+        removeListener: [Function: updateExceptionCapture],
+        newListener: [Function: updateExceptionCapture],
+        error: [Function: debugDomainError] },
+```
+
+
 
 
 
