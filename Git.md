@@ -177,7 +177,7 @@ b005c0d add Skillset
 
 ### Git Push
 
-**git push [remote name] [branch name]**
+**git pull/push [remote name] [branch name]**
 
 
 
