@@ -118,7 +118,9 @@ https://www.slideshare.net/jaehyun/
 
 
 
+Gas의 이해
 
+[https://medium.com/@playdev/%EC%9D%B4%EB%8D%94%EB%A6%AC%EC%9B%80-%EA%B0%80%EC%8A%A4%EC%97%90-%EB%8C%80%ED%95%9C-%EC%9D%B4%ED%95%B4-gas-price-gas-limit-block-gas-limit-161268a5fc54](https://medium.com/@playdev/이더리움-가스에-대한-이해-gas-price-gas-limit-block-gas-limit-161268a5fc54)
 
 
 
