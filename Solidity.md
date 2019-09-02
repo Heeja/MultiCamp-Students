@@ -10,6 +10,10 @@
 
 
 
+https://steemkr.com/kr/@tenihil/introducing-ethereum-and-solidity-3[[모두의 연구소] Introducing Ethereum and Solidity 3장 요약본]
+
+
+
 ### 개발환경
 
 
