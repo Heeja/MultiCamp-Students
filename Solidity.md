@@ -204,3 +204,245 @@ Gas의 이해
 | decoded input    | {}                                                           |
 | decoded output   | { 	"0": "string: 11111" }                                 |
 | logs             | []                                                           |
+
+
+
+#### 복습
+
+Remix ide
+
+```sol
+pragma solidity ^0.5.8;
+
+contract MyContract {
+    string value;
+    
+    constructor(string memory _value) public {
+    // public: 외부에서 접근이 가능하다.
+        value = _value;
+    }
+    
+    // get function
+    function getValue() public view returns (string memory) {    // 값을 얻는 함수이니 인자는 불필요
+    // view: 상태 변수에 대해서 보기(읽기)만 하겠다.
+        return value;
+    }
+    
+    // set function
+    function setValue(string memory _value) public {
+        value = _value; // 인자로 받은 _value를 현재 상태변수인 value에 적용
+    }
+}
+```
+
+
+
+##### Compile
+
+* Current version을 설정
+* Start to compile을 클릭하면 아래 contract가 생성된다.
+
+![1567470857566](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1567470857566.png)
+
+##### 배포
+
+* Environment
+  * JavaScript VM: 가상 테스트용. 5개의 Accout 제공.
+  * Injected Web3:
+  * Web3 Provider: 실제로 열려있는 Geth Server에 접속하여 배포
+* Account: Acount목록
+* Gas Limit: 배포에 사용할 수수료
+* Value: 거래할 코인 값 (단위 지정: Wei <<<< Gwei(Gas) <<<< Ether)
+
+
+
+![1567470919335](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1567470919335.png)
+
+* MyContract: 배포할 함수의 Compile
+* Deploy: 값을 지정하여 배포
+* At Address:
+  Contract address를 명시하면 다른 Account가 배포한 Compile 실행
+  (Gas 차감은 Deploy한 Account에게..)
+
+
+
+##### Solidity 변수
+
+* 변수 형식
+  [type] [변수 name] = [변수값]
+* 변수 종류
+  * string: 문자열 **" "**
+  * bool: **true/false**
+  * int: **정수 (-256 ~ 255)**
+  * uint: **양수 (0 ~ 255)**
+
+```sol
+pragma solidity ^0.5.8;
+
+contract MyContract {
+    //solidity 변수지정
+    //[type] [변수 name] = [변수값]
+   string public value;
+   bool public isValid = true; // bool: true/false
+   int public num1 = 100;      // int: 숫자. 기본으로 int256 셋팅.
+   int public num2 = -100;      // int: 음수 지정 가능
+   uint public unum1 = 200;
+   uint public unum2 = -200;
+   int256 public num256 = 256;
+   uint256 public unum256 = 256;
+   
+   int8 num8 = 10;  // -128~127
+   uint8 unum8 = 20; // 0~255
+}
+```
+
+
+
+* enum
+  * RED, GREEN, BLUE 의 값중 한개를 가질 수 있다.
+  * Ex. Color.RED의 값은 enum Color의 RED **Index값** (=0)
+  * Start Number를 줄 수 있다.
+
+```sol
+pragma solidity ^0.5.8;
+
+contract MyContract {
+    enum Color { RED, GREEN, BLUE };
+    
+    Color public color;
+    
+    constructor() public {
+        color = Color.RED;
+    }
+    
+    function activate() public {
+        color = Color.BLUE;
+    }
+    
+    function isActive() public view returns(bool) {
+        return color == Color.GREEN;
+    }
+    
+}
+```
+
+
+
+* 
+
+```sol
+pragma solidity ^0.5.8;
+
+contract MyContract {
+    enum Color { RED, GREEN, BLUE }
+    
+    Color public RED = Color.RED;
+    Color public GREEN = Color.GREEN;
+    Color public BLUE = Color.BLUE;
+    
+    function setColorRED(uint newColor) public {
+        RED = Color(newColor);
+    }
+}
+```
+
+
+
+
+
+#### 구조체 사용
+
+* 
+
+```
+pragma solidity ^0.5.8;
+
+contract StructContract {
+    struct Person {
+        string _firstName;
+        string _lastName;
+    }
+    
+    Person[] public people;
+    
+    uint public peopleCount;
+    
+    function addPerson (string memory _firstName, string memory _lastName) public {
+        people.push(Person(_firstName,_lastName));   // Person 구조체를 이용하여 Push해줘야 한다.
+        peopleCount ++;                             // Person인 추가될때 만다 peopleCount 1씩 증가
+    }
+}
+```
+
+
+
+* addPerson을 통해 Person추가
+* Person을 추가하니 peopleCount가 증가한다.
+* people의 0번째, 1번째, 2번째에 기록된 것을 확인할 수 있다.
+
+![1567474028132](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1567474028132.png)
+
+
+
+##### 활용
+
+* Person에 Address Mapping하여 추가
+
+```sol
+pragma solidity ^0.5.8;
+
+contract StructContract {
+    struct Person {
+        uint _id;
+        string _firstName;
+        string _lastName;
+    }
+    
+    uint public peopleCount;
+    
+    mapping (address => Person) public people;
+    
+    function addPerson (address _address, string memory _firstName, string memory _lastName) public {
+        peopleCount ++; // 0번 부터 시작하지 않으려고 먼저 Count
+        people[_address] = Person(peopleCount, _firstName, _lastName);
+    }
+}
+```
+
+
+
+* 투표수 확인
+
+```sol
+pragma solidity ^0.5.8;
+
+contract StructContract {
+    struct Person {
+        uint _id;
+        string _firstName;
+        string _lastName;
+    }
+    
+    uint public peopleCount;
+    
+    // 획득표 mapping
+    mapping (address => uint) public voteResult;
+    
+    mapping (address => Person) public people;
+    
+    function addPerson (address _address, string memory _firstName, string memory _lastName) public {
+        peopleCount ++; // 0번 부터 시작하지 않으려고 먼저 Count
+        people[_address] = Person(peopleCount, _firstName, _lastName);
+    }
+    
+    // 특정 address가 몇표를 획득했는가 확인하는 함수
+    function vote (address _address) public {
+        voteResult[_address] ++;
+    }
+}
+```
+
+* vote에 Person의 address를 넣으면 그 사람에게 투표하게 된다.
+* VoteResult에 투표받은 사람의 address를 넣고 확인하면 몇표 받았는지 확인 할 수 있다.
+
+![1567475541647](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1567475541647.png)
