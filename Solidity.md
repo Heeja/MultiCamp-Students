@@ -242,7 +242,7 @@ contract MyContract {
 * Current version을 설정
 * Start to compile을 클릭하면 아래 contract가 생성된다.
 
-![1567470857566](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1567470857566.png)
+![1567470857566](https://user-images.githubusercontent.com/50816203/64138997-57531b00-ce3a-11e9-911d-f4b30bdf6636.png)
 
 ##### 배포
 
@@ -254,9 +254,7 @@ contract MyContract {
 * Gas Limit: 배포에 사용할 수수료
 * Value: 거래할 코인 값 (단위 지정: Wei <<<< Gwei(Gas) <<<< Ether)
 
-
-
-![1567470919335](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1567470919335.png)
+![image](https://user-images.githubusercontent.com/50816203/64139028-72258f80-ce3a-11e9-9849-8fe78c57c891.png)
 
 * MyContract: 배포할 함수의 Compile
 * Deploy: 값을 지정하여 배포
@@ -380,7 +378,7 @@ contract StructContract {
 * Person을 추가하니 peopleCount가 증가한다.
 * people의 0번째, 1번째, 2번째에 기록된 것을 확인할 수 있다.
 
-![1567474028132](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1567474028132.png)
+![image](https://user-images.githubusercontent.com/50816203/64139042-85d0f600-ce3a-11e9-82b5-02c42805cb1a.png)
 
 
 
@@ -445,4 +443,4 @@ contract StructContract {
 * vote에 Person의 address를 넣으면 그 사람에게 투표하게 된다.
 * VoteResult에 투표받은 사람의 address를 넣고 확인하면 몇표 받았는지 확인 할 수 있다.
 
-![1567475541647](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1567475541647.png)
+![image](https://user-images.githubusercontent.com/50816203/64139057-95e8d580-ce3a-11e9-9354-5bd0fdb9be57.png)
