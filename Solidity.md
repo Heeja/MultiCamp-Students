@@ -237,14 +237,14 @@ contract MyContract {
 
 
 
-##### Compile
+### Remix Compile
 
 * Current version을 설정
 * Start to compile을 클릭하면 아래 contract가 생성된다.
 
 ![1567470857566](https://user-images.githubusercontent.com/50816203/64138997-57531b00-ce3a-11e9-911d-f4b30bdf6636.png)
 
-##### 배포
+### Remix 배포
 
 * Environment
   * JavaScript VM: 가상 테스트용. 5개의 Accout 제공.
@@ -264,7 +264,7 @@ contract MyContract {
 
 
 
-##### Solidity 변수
+#### Solidity 변수
 
 * 변수 형식
   [type] [변수 name] = [변수값]
@@ -382,7 +382,7 @@ contract StructContract {
 
 
 
-##### 활용
+#### 활용
 
 * Person에 Address Mapping하여 추가
 
@@ -441,6 +441,274 @@ contract StructContract {
 ```
 
 * vote에 Person의 address를 넣으면 그 사람에게 투표하게 된다.
-* VoteResult에 투표받은 사람의 address를 넣고 확인하면 몇표 받았는지 확인 할 수 있다.
+* VoteResult에 투표받은 사람의 address를 넣고 확인하면 몇표 받았는지 확인 할 수 있다. = 10
 
 ![image](https://user-images.githubusercontent.com/50816203/64139057-95e8d580-ce3a-11e9-9354-5bd0fdb9be57.png)
+
+
+
+### Solidity Programing
+
+
+
+####  함수 (function)
+
+* 동일한 코드가 반복 사용될 때 반복되는 부분을 함수로 처리
+  * 함수 내부에 선언된 변수는 지역변수
+  * 함수 외부에 선언된 변수는 상태변수
+* function 함수 이름 (입력 매개변수) 옵션(가시성) returns (출력 매개변수)
+  * function name(x1, x2, ...) option returns (y1, y2...)
+  * name : 함수의 이름
+  * 매개변수 : 입력 시 사용되는 파라메터 (x1, x2, ...)
+  * 반환값 : 결과 출력 시 사용되는 변수 (y1, y2, ...)함수 가시성
+    * Public, private, internal, external
+  * 기타 옵션
+    * View, pure, payable
+
+
+
+#### 조건문과 반복문
+
+* If / if-else
+* 삼항조건문
+* For문
+* While문
+* Break / continue
+
+
+
+#### 형변환
+
+* 암묵적 변환
+  * 데이터 손실이 없는 자료형
+  * Int8 -> int16 은 암묵적 가능
+
+* 명시적 형변환
+  * 데이터 손실이 발생할 수 있는 경우 컴파일러가 암묵적 형변환을 해주지 않음
+  * 개발자가 명시적으로 형변환, 데이터 손실 발생 가능
+
+
+
+#### 배열
+
+* length, push()
+* Storage 배열
+* Memory 배열
+* 고정 바이트 배열
+* 동적 바이트 배열
+
+
+
+#### 상속
+
+* 상속과 다형성 지원.
+* contract Parent {}
+* contract Child is Parent {}
+
+
+
+### 특수 변수 / 함수
+
+#### block 변수
+
+* 블록 해시 반환
+  * block.blockhash(uint blockNumber) returns (byte32)
+  * 최근 256 블록 내의 블록만 가능
+* 블록 넘버
+  * block.number()
+
+#### msg 변수
+
+* msg.sender: 함수(contract)를 실행한 Address
+* msg.value: 트랜젝션에 담긴 Ether 금액
+
+
+
+#### 수학함수
+
+* 해시 함수keccak256(...) returns (byte32)
+* sha3(...) returns (byte32)
+
+
+
+#### 폴백 함수 (fallback function)
+
+* 컨트랙트별로 하나만 가질수 있음
+* 컨트랙트로 전송된 이더를 처리하는 함수
+* 요청한 함수가 없는 경우 호출
+* 함수이름, 인자, 리턴값이 없는 빈 함수
+* External 가시성을 가져야 함
+* 내부에서 받은 이더를 어떻게 처리할 지 정할 수 있음.
+* Payable 함수를 거치치 않고 순수하게 ether를 전송받는 경우
+* 컨트랙트 함수를 거치지 않고 이더를 받고 싶으면 반드시 구현해야 함
+
+```sol
+function() external payable {   ......}
+```
+
+
+
+#### 계약 파기
+
+* Selfdestruct
+* Suicide
+
+
+
+#### timestamp
+
+* 관련 예약어
+  * Second, minute, hour, day, week, year
+
+```
+pragma solidity ^0.5.8;
+
+contract TimestampContract {
+   uint256 public peopleCount = 0;
+   mapping(uint => Person) public people;
+
+   uint256 startTime;
+
+   modifier onlyWhileOpen() {
+      require(block.timestamp >= startTime);
+   }
+
+   struct Person {
+      uint _id;
+      string _firstName;
+      string _lastName;
+   }
+
+   constructor() public {
+      startTime = 1567437931178; // Update this value
+   }
+
+   function addPerson(string memory _firstName, string memory _lastName)	public	onlyWhileOpen{
+      people[peopleCount] = Person(peopleCount, _firstName, _lastName);
+   }
+   function incrementCount() internal {
+      peopleCount += 1;
+   }
+}
+```
+
+
+
+#### address
+
+* 타입특수
+* 변수20바이트 주소 저장
+* \<address>.balance(uint256)
+* \<address>.transfer() 제공
+
+
+
+### 실습 - BankContract
+
+### 
+
+#### 이더 송금
+
+* msg.sender
+* msg.value
+* payable
+* address.transfer
+
+
+
+#### EOA => CA => EOA 이더 송금
+
+```sol
+pragma solidity ^0.5.8;
+
+contract EtherSendContract{
+	mapping(address => uint256) public balances;
+	address payable wallet;
+
+constructor(address payable _wallet) public {
+	wallet = _wallet;
+}
+
+function buyToken() public payable {
+	balances[msg.sender] += 1;
+	wallet.transfer(msg.value);
+}
+}
+```
+
+
+
+#### Bank 계약
+
+```
+contract Bank {
+   // bank balance
+   uint totalDeposit;
+   
+   // Account Balances
+   mapping(address=> uint) balanceOf;
+
+	// Deposit
+   function deposit() public payable {
+      balanceOf[msg.sender] += msg.value;
+      totalDeposit += msg.value;
+   }
+
+	// withdraw
+   function withdraw(uint _amount) public payable {
+      balanceOf[msg.sender] -= _amount;
+      totalDeposit -= _amount;
+      msg.sender.transfer(_amount);
+   }
+   
+	// getBalance
+   function getTotalBalance() public view returns(uint){
+   	return totalDeposit;
+   }
+
+	// getBackBalance
+   function getBalance(address _account) public view returns(uint){
+   	return balanceOf[_account];
+   }
+}
+```
+
+
+
+#### 잔액 확인
+
+```
+function getBalance() public view returns (uint) {
+	return address(this).balance;
+}
+```
+
+
+
+#### 이벤트
+
+```
+pragma solidity ^0.5.8;
+
+contract MyContract {
+   address payable wallet;
+   mapping(address => uint256) public balances;
+
+   event Purchase(address indexed _buyer, uint256 _amount);
+
+   constructor(address payable _wallet) public {
+   	wallet = _wallet;
+   }
+
+   function() external payable {
+   	buyToken();
+   }
+
+   function buyToken() public payable {
+      balances[msg.sender] += 1;
+      wallet.transfer(msg.value);
+      emit Purchase(msg.sender, 1);
+   }
+}
+```
+
