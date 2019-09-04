@@ -605,7 +605,7 @@ contract TimestampContract {
 
 ### 실습 - BankContract
 
-### 
+
 
 #### 이더 송금
 
@@ -640,36 +640,46 @@ function buyToken() public payable {
 
 #### Bank 계약
 
-```
+```sol
+pragma solidity ^0.5.8;
+
 contract Bank {
-   // bank balance
-   uint totalDeposit;
-   
-   // Account Balances
-   mapping(address=> uint) balanceOf;
+    uint public bankBalance;
 
-	// Deposit
-   function deposit() public payable {
-      balanceOf[msg.sender] += msg.value;
-      totalDeposit += msg.value;
-   }
+    // 누가(address) 얼마를(uint) 입금했는지 확인하기 위한 mapping
+    mapping (address => uint) balanceOf;
 
-	// withdraw
-   function withdraw(uint _amount) public payable {
-      balanceOf[msg.sender] -= _amount;
-      totalDeposit -= _amount;
-      msg.sender.transfer(_amount);
-   }
-   
-	// getBalance
-   function getTotalBalance() public view returns(uint){
-   	return totalDeposit;
-   }
+    constructor() public {
 
-	// getBackBalance
-   function getBalance(address _account) public view returns(uint){
-   	return balanceOf[_account];
-   }
+    }
+
+    // 은행에 코인 입금 함수
+    function deposit() public payable { // 입출금 함수임을 표시 = payable
+        // deposit을 수행할 때 보낸 금액만큼 추가
+        balanceOf[msg.sender] += msg.value;
+        bankBalance += msg.value;
+    }
+
+    // 은행에 맡긴 코인 출금 함수
+    function withdraw(uint _amount) public payable {
+        // 금액이 없을 경우 출금 안되도록 정의
+        require(balanceOf[msg.sender] >= _amount);
+
+        balanceOf[msg.sender] -= _amount;
+        bankBalance -= _amount;
+        msg.sender.transfer(_amount);
+    }
+
+    // 잔액 조회 함수
+    function getBalanceOf(address _account) public view returns (uint) {
+        return balanceOf[_account];
+    }
+
+    // 은행이 받은 모든코인 조회
+    function getTotalBalance() public view returns (uint) {
+        return bankBalance;
+    }
+
 }
 ```
 
@@ -677,7 +687,7 @@ contract Bank {
 
 #### 잔액 확인
 
-```
+```sol
 function getBalance() public view returns (uint) {
 	return address(this).balance;
 }
@@ -687,7 +697,7 @@ function getBalance() public view returns (uint) {
 
 #### 이벤트
 
-```
+```sol
 pragma solidity ^0.5.8;
 
 contract MyContract {
