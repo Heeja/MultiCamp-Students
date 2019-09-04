@@ -787,7 +787,7 @@ contract Vote {
     mapping (string => uint) score; // 각 후보별 특표수
     mapping (uint8 => string) public candidateList; // 후보자 리스트
     mapping (address => bool) isVoted;  // 투표 확인 유무 
-    address owner;
+    address payable owner;  // contract 삭제시 반환되는 코인을 받아야하기 때문에 payable
 
     constructor () public {
         owner = msg.sender;
@@ -807,7 +807,18 @@ contract Vote {
 
     // 후보자 등록
     function addCandiate (string memory _candidate) public ownerOnly {  // owner만 후보자 등록 가능!
-        
+        // 후보자 중복확인
+        bool found = false;
+        for (uint8 i=0; i<numOfCandidate; i++) {
+            // solidity에서는 문자열 값 비교가 안된다. 그래서 keccak256(해시함수)로 변환하고 이것으로도 부족해서 bytes로 변환하여 검사
+            // bytes: ??
+            if(keccak256(bytes(candidateList[i])) == keccak256(bytes(_candidate))){
+                found = true;
+                break;
+            }
+        }
+        require (!found);
+
         candidateList[numOfCandidate] = _candidate;
         numOfCandidate ++;
     }
@@ -833,6 +844,12 @@ contract Vote {
     function getScore(string memory _candidate) public view returns (uint) {
         return score[_candidate];
     }
+
+    // destroy contract 컨트랙트 삭제!
+    function killContract() public ownerOnly {
+        // 아래 계좌로 코인은 반환된다.
+        selfdestruct(owner);
+    }
 }
 ```
 
@@ -842,5 +859,71 @@ contract Vote {
 * getCandidate: 1~N번째 후보자 확인
 * getNumOfCandidate: 후보자 명수
 * getScore: "[후보자명]"을 입력하면 득표수 확인
+* killContract: Contract를 삭제한다! 거래되었던 ether는 selfdestruct()에게 돌려주게된다.
 
 ![image](https://user-images.githubusercontent.com/50816203/64227187-7bd3f380-cf1d-11e9-8471-8e4d50153a6d.png)
+
+
+
+#### 추첨
+
+```sol
+pragma solidity ^0.5.8;
+
+contract Lottery {
+    // 응모자를 관리하는 매핑
+	mapping (uint => address) public applicants;
+	// 응모자 수
+	uint public numOfApplicants;
+    bool public isHolder;
+	// 당첨자 정보
+	address public winnerAddress;
+	uint public winnerInd;
+	// 소유자
+	address public owner;
+	// 타임스탬프
+	uint public timestamp;
+
+    // 생성자
+	constructor() public {
+		numOfApplicants = 0;
+		owner = msg.sender;
+	}
+
+    // owner만 사용할 수 있도록 선언
+    modifier ownerOnly {
+        require(msg.sender == owner, "Only owner can call this function.");
+		_;
+    }
+
+    // 응모
+    function enter() public {
+        // 중복 신청 불가
+        for(uint i=0; i < numOfApplicants; i++){
+            require(applicants[i] != msg.sender);
+        }
+        // 응모 처리
+        applicants[numOfApplicants++] = msg.sender;
+    }
+
+    // 추첨
+    function hold() public ownerOnly {   // Owner만 추첨 가능
+        // 최소 응모자
+        require(numOfApplicants > 3);
+
+        // timestamp 값 받아오기
+        timestamp = block.timestamp;    // hole함수가 실행되어 transaction이 들어간 block의 timestamp
+        // 채굴자는 채굴자가 만든 block의 timestamp를 정할 수 있는 단점..
+
+        // 추첨
+        winnerInd = timestamp % numOfApplicants;    // timestamp를 사용자 수 만큼 나눈다.
+        winnerAddress = applicants[winnerInd];
+    }
+}
+```
+
+
+
+
+
+![image](https://user-images.githubusercontent.com/50816203/64231576-fce5b780-cf2a-11e9-87e2-5d1aeda61f0b.png)
