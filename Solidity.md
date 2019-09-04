@@ -878,7 +878,7 @@ contract Lottery {
     bool public isHolder;
 	// 당첨자 정보
 	address public winnerAddress;
-	uint public winnerInd;
+	uint public winnerId;
 	// 소유자
 	address public owner;
 	// 타임스탬프
@@ -916,14 +916,19 @@ contract Lottery {
         // 채굴자는 채굴자가 만든 block의 timestamp를 정할 수 있는 단점..
 
         // 추첨
-        winnerInd = timestamp % numOfApplicants;    // timestamp를 사용자 수 만큼 나눈다.
-        winnerAddress = applicants[winnerInd];
+        winnerId = timestamp % numOfApplicants;    // timestamp를 사용자 수 만큼 나눈다.
+        winnerAddress = applicants[winnerId];
     }
 }
 ```
 
-
-
-
+* enter: 응모 참여
+* hold: 당첨자 뽑기. Owner만 실행할 수 있다.
+* applicants: ID에 따른 응모자 Address
+* numOfApplicants: 응모자 수
+* owner: Contract 생성자 = Owner
+* timestamp: 당첨 시기. hold를 하기 전에는 값이 없다.
+* winnerAddress: 당첨자 Address 확인
+* winnerId: 당첨자 ID 확인
 
 ![image](https://user-images.githubusercontent.com/50816203/64231576-fce5b780-cf2a-11e9-87e2-5d1aeda61f0b.png)
