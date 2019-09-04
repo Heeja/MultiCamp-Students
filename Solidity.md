@@ -726,7 +726,7 @@ contract MyContract {
 
 #### Token 거래
 
-```
+```sol
 pragma solidity ^0.5.8;
 
 contract SimpleToken {
@@ -738,7 +738,7 @@ contract SimpleToken {
 
     constructor() public {
         // balanceOf[msg.sender] = 1*(10**18);
-        // owner = msg.sender;
+        owner = msg.sender;
     }
 
     function transfer(address _to, uint _value) public {
@@ -932,3 +932,85 @@ contract Lottery {
 * winnerId: 당첨자 ID 확인
 
 ![image](https://user-images.githubusercontent.com/50816203/64231576-fce5b780-cf2a-11e9-87e2-5d1aeda61f0b.png)
+
+
+
+
+
+#### 크라우드 펀딩
+
+```sol
+pragma solidity ^0.5.8;
+
+// 크라우드 펀딩은..
+// 특정 시점을 기준으로 마감.
+//
+
+contract CrowdFunding {
+
+    // 투자자들
+    struct Investor {
+        address payable addr;
+        uint amount;
+    }
+
+    mapping (uint => Investor) public investors;
+    // Funding 참여자 수
+    uint public numOfInvestor;
+
+    // 목표 금액
+    uint goalAmount = 2*(10**18);
+    // 모인 금액
+    uint public totalAmount;
+
+    address payable public owner;
+
+
+    // Functions
+    constructor () public {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
+    function fund() public payable {    // 실제 돈이 거래되기 때문에 payable!
+        // if(){
+            investors[numOfInvestor] = Investor(msg.sender, msg.value);
+            numOfInvestor ++;
+            totalAmount += msg.value;
+        // } else {
+        //     investors[]
+        //     totalAmount += msg.value;
+        // }
+    }
+
+    function checkGoalFunding() public onlyOwner payable{
+        if(totalAmount >= goalAmount){
+            owner.transfer(address(this).balance);
+        } else {
+            for(uint i=0; i<numOfInvestor; i++){    // 두번째 조건이 false일때 멈춘다!
+                investors[i].addr.transfer(investors[i].amount);
+            }
+        }
+    }
+
+    // 혹시 모를 문제(해킹 등..)가 발생했을때 돈을 회수하기 위해..!
+    function killContract() public onlyOwner {
+        selfdestruct(owner);
+    }
+}
+```
+
+* checkGoalFunding:
+* fund:
+* killContract:
+* investors:
+* numOfInvestor:
+* owner:
+* totalAmount: 모금된 Funding 금액
+
+![image](https://user-images.githubusercontent.com/50816203/64238792-04f92380-cf3a-11e9-8319-27a78a4ebe64.png)
+
