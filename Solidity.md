@@ -722,3 +722,125 @@ contract MyContract {
 }
 ```
 
+
+
+#### Token 거래
+
+```
+pragma solidity ^0.5.8;
+
+contract SimpleToken {
+    address owner;
+
+    string symbol = "SKKTLG";
+
+    mapping(address => uint) public balanceOf;
+
+    constructor() public {
+        // balanceOf[msg.sender] = 1*(10**18);
+        // owner = msg.sender;
+    }
+
+    function transfer(address _to, uint _value) public {
+        // transfer 실행자
+        address _from = msg.sender;
+        
+        // 소지한 금액보다 높은 금액을 보낼 수 없도록
+        require(balanceOf[_from] >= _value);
+        
+        balanceOf[_from] -= _value;
+        balanceOf[_to] += _value;
+    }
+
+    function buy() public payable{
+        // Token 환율
+        uint SGken = msg.value*10;
+
+        //require(msg.value >= );
+        balanceOf[msg.sender] += SGken;
+
+    }
+
+    function sell(uint _value) public payable{
+        require(balanceOf[msg.sender] >= _value);
+        
+        // Token 환율
+        uint weiAmount = _value/10;
+
+        balanceOf[msg.sender] -= _value;
+        msg.sender.transfer(weiAmount);
+    }
+
+}
+```
+
+
+
+#### 투표
+
+```sol
+pragma solidity ^0.5.8;
+
+contract Vote {
+    uint8 numOfCandidate = 0;
+
+    mapping (string => uint) score; // 각 후보별 특표수
+    mapping (uint8 => string) public candidateList; // 후보자 리스트
+    mapping (address => bool) isVoted;  // 투표 확인 유무 
+    address owner;
+
+    constructor () public {
+        owner = msg.sender;
+    }
+
+    // owner만 할 수 있도록 modifier 선언
+    modifier ownerOnly {
+        require(msg.sender == owner, "Only owner can call this function.");
+        _;
+    }
+
+    // 한번 투표한 사람은 다시 투표하지 못하도록..
+    modifier checkDuplicate {
+        require(isVoted[msg.sender] == false, "You Voted!");
+        _;
+    }
+
+    // 후보자 등록
+    function addCandiate (string memory _candidate) public ownerOnly {  // owner만 후보자 등록 가능!
+        
+        candidateList[numOfCandidate] = _candidate;
+        numOfCandidate ++;
+    }
+
+    // 투표
+    function vote (string memory _candidate) public checkDuplicate {
+        // require(isVoted[_candidate] == true, "You voted!");
+        score[_candidate] ++;
+        isVoted[msg.sender] = true;
+    }
+
+    // 후보자 수
+    function getNumOfCandidate () public view returns (uint8) {
+        return numOfCandidate;
+    }
+
+    // 후보자 확인
+    function getCandidate(uint8 index) public view returns (string memory) {
+        return candidateList[index-1];  // 배열은 0부터 시작해서 -1을 해주었다.
+    }
+
+    // 후보자 득표수 확인
+    function getScore(string memory _candidate) public view returns (uint) {
+        return score[_candidate];
+    }
+}
+```
+
+* addCandidate: ""(쌍따옴표)안에 후보자 이름을 넣고 실행하면 후보자 등록
+* vote: "[후보자이름]"을 입력하고 실행하면 1표씩 투표
+* candidateList: 배열의 구조로 0~N을 입력하면 순서대로 후보자 이름 출력
+* getCandidate: 1~N번째 후보자 확인
+* getNumOfCandidate: 후보자 명수
+* getScore: "[후보자명]"을 입력하면 득표수 확인
+
+![image](https://user-images.githubusercontent.com/50816203/64227187-7bd3f380-cf1d-11e9-8471-8e4d50153a6d.png)
