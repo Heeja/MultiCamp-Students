@@ -10,7 +10,9 @@
 
 
 
-https://steemkr.com/kr/@tenihil/introducing-ethereum-and-solidity-3[[모두의 연구소] Introducing Ethereum and Solidity 3장 요약본]
+https://steemkr.com/kr/@tenihil/introducing-ethereum-and-solidity-3
+
+[ [모두의 연구소] Introducing Ethereum and Solidity 3장 요약본 ]
 
 
 
@@ -1192,6 +1194,7 @@ voteContract.methods.getNumOfCandidate().call()
 
 * remix에서 Test할 때 Mining 작업이 계속 되어야 Transaction, contract Test하기가 수월하다.
 * 그래서 geth를 대체하는 가상 Node로 Ganache를 사용한다.
+* **끄게되면 작업하던 내용이 사라짐!!**
 
 ![image](https://user-images.githubusercontent.com/50816203/64308230-8355d400-cfd3-11e9-9326-8898ba72fd0f.png)
 
