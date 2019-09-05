@@ -1014,3 +1014,210 @@ contract CrowdFunding {
 
 ![image](https://user-images.githubusercontent.com/50816203/64238792-04f92380-cf3a-11e9-8319-27a78a4ebe64.png)
 
+
+
+
+
+### Geth Web 연동
+
+* Gethrpc.bat을 작성
+  * geth rpc 실행 code
+
+```bat
+geth --datadir chaindata --networkid 33
+--nodiscover --maxpeers 0
+--rpc -rpcaddr "0.0.0.0" --rpcport 8545
+--rpccorsdomain "*"
+--rpcapi "db,eth,net,web3,admin,devug,miner,shh,txpool,personal"
+console
+```
+
+
+
+* Geth폴더에 넣어 . bat 실행.
+* 명령어 결과를 통해 연결 확인
+  Ex. 블록생성량 조회(eth.blockNumber / web3.eth.getBlockNumber().then(console.log))
+* web3를 통한 명령어는 Promise Type으로 받기 때문에 .then으로 처리했다.
+
+![image](https://user-images.githubusercontent.com/50816203/64306668-89958180-cfce-11e9-9e8a-5a7105c6a909.png)
+
+
+
+#### Contract Test
+
+* 변수 선언
+  * **const abi = [ABI Copy Code]**
+  * **const contractAddress = "[Contract Address]"**
+  * Vote Contract 변수로 선언하여 실행한다.
+    **var voteContract = new web3.eth.Contract(abi, contractAddress)**
+
+##### contracttest.js 파일로 실행 해보자
+
+```js
+var Web3 = require('web3');
+var web3 = new Web3('http://localhost:8545');
+
+const abi = [
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_candidate",
+                "type": "string"
+            }
+        ],
+        "name": "addCandiate",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "killContract",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_candidate",
+                "type": "string"
+            }
+        ],
+        "name": "vote",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "name": "candidateList",
+        "outputs": [
+            {
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "index",
+                "type": "uint8"
+            }
+        ],
+        "name": "getCandidate",
+        "outputs": [
+            {
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getNumOfCandidate",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_candidate",
+                "type": "string"
+            }
+        ],
+        "name": "getScore",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+];
+
+const contractAddress = "0xd1A6569c43d4C89C29290013E21E73c1C198E1d2";
+
+var voteContract = new web3.eth.Contract(abi, contractAddress);
+
+console.log();
+voteContract.methods.getNumOfCandidate().call()
+    .then((err, result) => {
+        if (err) console.log('err = ', err);
+        else console.log('result = ', result);
+    })
+```
+
+
+
+## Ganache Tool
+
+* remix에서 Test할 때 Mining 작업이 계속 되어야 Transaction, contract Test하기가 수월하다.
+* 그래서 geth를 대체하는 가상 Node로 Ganache를 사용한다.
+
+![image](https://user-images.githubusercontent.com/50816203/64308230-8355d400-cfd3-11e9-9326-8898ba72fd0f.png)
+
+
+
+#### Server Setting
+
+* HostName: PC의 Ethernet 설정
+* Port Number: Node의 포트번호
+  * console로 geth를 실행중이라면 8545는 충돌 날 수 있다.
+* Network ID:
+
+![image](https://user-images.githubusercontent.com/50816203/64307682-d038ab00-cfd1-11e9-82f8-4ef0b34aaee4.png)
+
+
+
+#### Block
+
+
+
+![image](https://user-images.githubusercontent.com/50816203/64308197-69b48c80-cfd3-11e9-896b-0643a866250e.png)
+
+
+
+#### Transaction
+
+
+
+![image](https://user-images.githubusercontent.com/50816203/64307731-0118e000-cfd2-11e9-9180-16523351b9ab.png)
